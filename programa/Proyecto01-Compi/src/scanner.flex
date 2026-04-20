@@ -196,36 +196,56 @@ espacio          = {LineTerminator} | [ \t\f]
         return new Symbol(sym.GREATHER_TE, yyline, yycolumn, yytext()); 
     }
 
-    {id}  {
-                if (!tablaSimbolos.existe(yytext())) {
-                    tablaSimbolos.agregar(yytext(), "-", "identificador", yyline + 1, yycolumn + 1);
-                }
-                tokenWriter.println("Token: ID\tLexema: " + yytext() + "\tTabla: tablaSimbolos\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1));
-                return new Symbol(sym.ID, yyline, yycolumn, yytext());
-          }
+    {id}  
+    {
+        if (!tablaSimbolos.existe(yytext())) {
+            tablaSimbolos.agregar(yytext(), "-", "identificador", yyline + 1, yycolumn + 1);
+        }
+        tokenWriter.println("Token: ID\tLexema: " + yytext() + "\tTabla: tablaSimbolos\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1));
+        return new Symbol(sym.ID, yyline, yycolumn, yytext());
+    }
 
     {exponencial}  
     { 
+        if (!tablaSimbolos.existe("exp_" + yytext())) {
+            tablaSimbolos.agregar("exp_" + yytext(), "int", "literal", yyline + 1, yycolumn + 1, yytext());
+        }
         tokenWriter.println("Token: EXPONENCIAL\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
         return new Symbol(sym.EXPONENCIAL, yyline, yycolumn, yytext()); 
     }
+
     {fraccion}     
     { 
+        if (!tablaSimbolos.existe("frac_" + yytext())) {
+            tablaSimbolos.agregar("frac_" + yytext(), "float", "literal", yyline + 1, yycolumn + 1, yytext());
+        }
         tokenWriter.println("Token: FRACCION\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
         return new Symbol(sym.FRACCION, yyline, yycolumn, yytext()); 
     }
+
     {flotante}     
     { 
+        if (!tablaSimbolos.existe("float_" + yytext())) {
+            tablaSimbolos.agregar("float_" + yytext(), "float", "literal", yyline + 1, yycolumn + 1, yytext());
+        }
         tokenWriter.println("Token: FLOTANTE\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
         return new Symbol(sym.FLOTANTE, yyline, yycolumn, yytext()); 
     }
+
     {entero}       
     { 
+        if (!tablaSimbolos.existe("int_" + yytext())) {
+            tablaSimbolos.agregar("int_" + yytext(), "int", "literal", yyline + 1, yycolumn + 1, yytext());
+        }
         tokenWriter.println("Token: ENTERO\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
         return new Symbol(sym.ENTERO, yyline, yycolumn, yytext()); 
     }
+
     {charLiteral}  
     { 
+        if (!tablaSimbolos.existe("char_" + yytext())) {
+            tablaSimbolos.agregar("char_" + yytext(), "char", "literal", yyline + 1, yycolumn + 1, yytext());
+        }
         tokenWriter.println("Token: CHAR_LIT\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
         return new Symbol(sym.CHAR_LIT, yyline, yycolumn, yytext()); 
     }
@@ -355,10 +375,15 @@ espacio          = {LineTerminator} | [ \t\f]
 }
 
 <CADENA> {
-    \"               { yybegin(YYINITIAL);
-                       String valor = string.toString();
-                       tokenWriter.println("Token: STRING_LITERAL\tLexema: \"" + valor + "\"\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1));
-                       return new Symbol(sym.STRING_LITERAL, yyline, yycolumn, valor); }
+    \"              { 
+                        yybegin(YYINITIAL);
+                        String valor = string.toString();
+                        if (!tablaSimbolos.existe("string_" + valor)) {
+                            tablaSimbolos.agregar("string_" + valor, "string", "literal", yyline + 1, yycolumn + 1, valor);
+                        }
+                        tokenWriter.println("Token: STRING_LITERAL\tLexema: \"" + valor + "\"\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1));
+                        return new Symbol(sym.STRING_LITERAL, yyline, yycolumn, valor);
+                    } 
     [^\n\r\"\\]+     { string.append(yytext()); }
     \\t              { string.append('\t'); }
     \\n              { string.append('\n'); }
