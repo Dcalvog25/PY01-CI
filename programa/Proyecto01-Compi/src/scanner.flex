@@ -121,17 +121,21 @@ espacio = {LineTerminator} | [ \t\f]
 <YYINITIAL> {espacio} { /* se ignora */ }
 
 <CADENA> {
-      \"                  { yybegin(YYINITIAL); 
-                            return symbol(sym.STRING_LITERAL, 
-                            string.toString()); }
-      [^\n\r\"\\]+        { string.append( yytext() ); }
-      \\t                 { string.append('\t'); }
-      \\n                 { string.append('\n'); }
+    \"                  { yybegin(YYINITIAL); 
+                        return symbol(sym.STRING_LITERAL, 
+                        string.toString()); }
+    [^\n\r\"\\]+        { string.append( yytext() ); }
+    \\t                 { string.append('\t'); }
+    \\n                 { string.append('\n'); }
 
-      \\r                 { string.append('\r'); }
-      \\\"                { string.append('\"'); }
-      \\                  { string.append('\\'); }
-    }
+    \\r                 { string.append('\r'); }
+    \\\"                { string.append('\"'); }
+    \\\\                { string.append('\\'); }
+    // {LineTerminator}    { 
+    //     System.out.println("Error léxico: cadena no cerrada en línea " + yyline); 
+    //     yybegin(YYINITIAL); 
+    // }
+}
 
 /* Manejo de error */
 <YYINITIAL> . { System.out.println("Error léxico: " + yytext() + " en línea " + yyline); }
