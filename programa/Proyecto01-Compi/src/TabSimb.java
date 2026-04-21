@@ -72,7 +72,7 @@ public class TabSimb {
         }
     }
 
-    public void escribirenarchivo(String archivo) {
+    public void escribirArchivo(String archivo) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(archivo))) {
             writer.println("=== Tabla de Símbolos ===");
             writer.println("Nombre\tTipo\tCategoría\tLínea\tColumna\tValor");

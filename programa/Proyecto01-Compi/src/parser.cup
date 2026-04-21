@@ -1,1 +1,36 @@
-.
+import java_cup.runtime.*;
+
+parser code {:
+    Lexer s;
+
+    public parser(Lexer s) {
+        this.s = s;
+    }
+:};
+
+init with {: :};
+scan with {: return s.next_token(); :};
+
+// Terminales
+
+terminal IF, ELSE, DO, WHILE, SWITCH, CASE, DEFAULT, BREAK, RETURN;
+terminal CIN, COUT, EMPTY, MAIN;
+terminal STRING, CHAR, FLOAT, BOOL, INT;
+terminal TRUE, FALSE;
+
+terminal EQUAL, N_EQUAL, LESS_T, LESS_TE, GREATHER_T, GREATHER_TE;
+
+terminal ID, ENTERO, FLOTANTE, EXPONENCIAL, FRACCION;
+terminal CHAR_LIT, STRING_LITERAL;
+
+terminal ASIGNAR;
+terminal INICIO_INDICES, FINAL_INDICES;
+terminal INICIO_PAREN, FINAL_PAREN;
+terminal INICIO_BLOQUE, FINAL_BLOQUE;
+terminal MASMAS, MENOSMENOS;
+terminal SUMA, RESTA, MULTI, DIV, MOD, POT;
+terminal OR, AND, NOT;
+terminal SEPARADOR, FIN_EXPR, COMA, DOS_PUNTOS;
+
+// No Terminales
+

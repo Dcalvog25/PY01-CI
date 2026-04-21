@@ -12,19 +12,23 @@ import java.io.*;
 
 %{
     TabSimb tablaSimbolos = new TabSimb();
-
+    ManejadorErrores manejadorErrores;
     PrintWriter tokenWriter;
 
     {
         try {
             tokenWriter = new PrintWriter(new FileWriter("tokens.txt"));
+            manejadorErrores = new ManejadorErrores();
         } catch (IOException e) {
-            System.err.println("Error al abrir tokens.txt: " + e.getMessage());
+            System.err.println("Error al abrir archivos: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error al inicializar ManejadorErrores: " + e.getMessage());
         }
     }
 
     public void cerrar() {
         if (tokenWriter != null) tokenWriter.close();
+        if (manejadorErrores != null) manejadorErrores.cerrar();
         tablaSimbolos.escribirArchivo("tabla_simbolos.txt");
     }
 
@@ -364,7 +368,14 @@ espacio          = {LineTerminator} | [ \t\f]
 
     {espacio}  { /* ignorar */ }
 
-    .  { System.out.println("Error lexico: '" + yytext() + "' en linea " + (yyline + 1) + ", columna " + (yycolumn + 1)); }
+    .  { 
+        String errorMsg = "Carácter no válido: '" + yytext() + "'";
+        if (manejadorErrores != null) {
+            manejadorErrores.agregarErrorLexico(errorMsg, yyline, yycolumn);
+        } else {
+            System.err.println("ERROR LÉXICO [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
+        }
+    }
 }
 
 <COMENTARIO> {
@@ -390,6 +401,13 @@ espacio          = {LineTerminator} | [ \t\f]
     \\r              { string.append('\r'); }
     \\\"             { string.append('\"'); }
     \\\\             { string.append('\\'); }
-    {LineTerminator} { System.out.println("Error lexico: cadena no cerrada en linea " + (yyline + 1) + ", columna " + (yycolumn + 1));
-                       yybegin(YYINITIAL); }
+    {LineTerminator} { 
+        String errorMsg = "Cadena no cerrada";
+        if (manejadorErrores != null) {
+            manejadorErrores.agregarErrorLexico(errorMsg, yyline, yycolumn);
+        } else {
+            System.err.println("ERROR LÉXICO [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
+        }
+        yybegin(YYINITIAL); 
+    }
 }
