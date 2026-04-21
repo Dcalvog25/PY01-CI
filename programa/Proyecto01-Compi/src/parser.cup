@@ -34,3 +34,72 @@ terminal SEPARADOR, FIN_EXPR, COMA, DOS_PUNTOS;
 
 // No Terminales
 
+non terminal programa;
+non terminal main;
+non terminal funciones;
+non terminal funcion;
+non terminal lista_parametros;
+non terminal parametro;
+non terminal bloque;
+non terminal lista_sentencias;
+non terminal llamada_funcion;
+non terminal sentencia;
+
+non terminal creacion;
+non terminal creacion_array;
+non terminal lista_expresiones;
+non terminal asignacion;
+non terminal asignacion_array;
+non terminal acceso_array;
+non terminal creacion_asignacion;
+non terminal creacion_asignacion_array;
+non terminal valores_array;
+non terminal lista_valores;
+non terminal elemento_valor;
+
+non terminal expresion;
+non terminal expresion_logica;
+non terminal expresion_conjuncion;
+non terminal expresion_negacion;
+non terminal expresion_relacional;
+non terminal expresion_aritmetica;
+non terminal expresion_termino;
+non terminal expresion_factor;
+non terminal expresion_potencia;
+non terminal expresion_unarios;
+non terminal expresion_valores;
+
+non terminal relacional;
+non terminal equal;
+non terminal n_equal;
+non terminal less_t;
+non terminal less_te;
+non terminal greather_t;
+non terminal greather_te;
+
+non terminal condicion;
+non terminal bloque_if_else;
+non terminal bloque_do_while;
+non terminal bloque_switch;
+non terminal bloque_casos;
+non terminal lista_casos;
+non terminal caso;
+non terminal default_case;
+
+non terminal break_nt;
+non terminal return_nt;
+non terminal cin_nt;
+non terminal cout_nt;
+
+non terminal valor;
+non terminal literal;
+non terminal numero;
+non terminal bool_nt;
+non terminal char_nt;
+non terminal string_nt;
+non terminal tipo;
+
+// Inicio
+
+start with programa;
+
