@@ -1,0 +1,152 @@
+Inicio -> <programa> ::= <funciones> <main> | <main>
+
+<main> ::= "empty" <separador> "__main__" <inicio_paren> <final_paren> <bloque>
+<funciones> ::= <funcion> <funciones> | <funcion>
+<funcion> ::= <tipo> <separador> <id> <inicio_paren> <lista_parametros> <final_paren> <bloque>
+            | <tipo> <separador> <id> <inicio_paren> <final_paren> <bloque
+<lista_parametros> ::= <parametro> "," <lista_parametros> | <parametro>
+<parametro> ::= <tipo> <separador> <id>
+<bloque> ::= <inicio_bloque> <lista_sentencias> <final_bloque>
+<lista_sentencias> ::= <sentencia> <lista_sentencias> | <sentencia>
+<llamada_funcion> ::= <id> <inicio_paren> <lista_expresiones> <final_paren>
+                    | <id> <inicio_paren> <final_paren>
+
+<sentencia> ::= <creacion> <fin_expr>
+              | <asignacion> <fin_expr>
+              | <creacion_array> <fin_expr>
+              | <asignacion_array> <fin_expr>
+              | <creacion_asignacion> <fin_expr>
+              | <creacion_asignacion_array> <fin_expr>
+              | <return> <fin_expr>
+              | <break> <fin_expr>
+              | <llamada_funcion> <fin_expr>
+              | <bloque_if_else>
+              | <bloque_do_while>
+              | <bloque_switch>
+              | <expresion> <fin_expr>
+              | <cin> <fin_expr>
+              | <cout> <fin_expr>
+
+<creacion> ::= <tipo> <separador> <id>
+<creacion_array> ::= <tipo_array> <separador> <id> <inicio_indices> <entero> <final_indices> <inicio_indices> <entero> <final_indices>
+<tipo_array> ::= "int" | "float"
+<lista_expresiones> ::= <expresion> "," <lista_expresiones> | <expresion>
+<asignacion> ::= <id> "<-" <expresion>
+<asignacion_array> ::= <id> <inicio_indices> <expresion> <final_indices> <inicio_indices> <expresion> <final_indices> "<-" <expresion>
+<acceso_array> ::= <id> <inicio_indices> <expresion> <final_indices> <inicio_indices> <expresion> <final_indices>
+<creacion_asignacion> ::= <tipo> <separador> <id> "<-" <expresion>
+<creacion_asignacion_array> ::= <tipo_array> <separador> <id> <inicio_indices> <entero> <final_indices> <inicio_indices> <entero> <final_indices> "<-" <valores_array>
+<valores_array> ::= <inicio_bloque> <lista_valores> <final_bloque>
+<lista_valores> ::= <elemento_valor> "," <lista_valores> | <elemento_valor>
+<elemento_valor> ::= <expresion> | <valores_array>
+
+<expresion> ::= <expresion_logica>
+<expresion_logica> ::= <expresion_conjuncion> "#" <expresion_logica>
+                     | <expresion_conjuncion>
+<expresion_conjuncion> ::= <expresion_negacion> "@" <expresion_conjuncion>
+                         | <expresion_negacion>
+<expresion_negacion> ::= "$" <expresion_negacion>
+                       | <expresion_relacional>
+<expresion_relacional> ::= <relacional>
+                         | <expresion_aritmetica>
+
+<relacional> ::= <equal>
+               | <n_equal>
+               | <less_t>
+               | <less_te>
+               | <greather_t>
+               | <greather_te>
+
+<equal> ::= "equal" <inicio_paren> <expresion> "," <expresion> <final_paren>
+<n_equal> ::= "n_equal" <inicio_paren> <expresion> "," <expresion> <final_paren>
+<less_t> ::= "less_t" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
+<less_te> ::= "less_te" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
+<greather_t> ::= "greather_t" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
+<greather_te> ::= "greather_te" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
+
+<expresion_aritmetica> ::= <expresion_termino> "+" <expresion_aritmetica>
+                         | <expresion_termino> "-" <expresion_aritmetica>
+                         | <expresion_termino>
+<expresion_termino> ::= <expresion_factor> "*" <expresion_termino>
+                      | <expresion_factor> "/" <expresion_termino>
+                      | <expresion_factor> "%" <expresion_termino>
+                      | <expresion_factor>
+<expresion_factor> ::= <expresion_potencia> "^" <expresion_factor>
+                     | <expresion_potencia>
+<expresion_potencia> ::= <expresion_unarios>
+<expresion_unarios> ::= "++" (<id>|<acceso_array>)
+                      | "--" (<id>|<acceso_array>)
+                      | "-" <numero>
+                      | <expresion_valores>
+<expresion_valores> ::= <literal>
+                      | <id>
+                      | <acceso_array>
+                      | <llamada_funcion>
+                      | <inicio_paren> <expresion> <final_paren>
+
+<condicion> ::= <expresion_logica>
+<bloque_if_else> ::= "if" <separador> <inicio_paren> <condicion> <final_paren> <bloque>
+                   | "if" <separador> <inicio_paren> <condicion> <final_paren> <bloque> "else" <separador> <bloque>
+<bloque_do_while> ::= "do" <separador> <bloque> "while" <separador> <inicio_paren> <condicion> <final_paren> <fin_expr>
+<bloque_switch> ::= "switch" <separador> <inicio_paren> <condicion> <final_paren> <bloque_casos>
+<bloque_casos> ::= <inicio_bloque> <lista_casos> <final_bloque>
+                 | <inicio_bloque> <lista_casos> <default> <final_bloque>
+<lista_casos> ::= <caso> <lista_casos> | <caso>
+<caso> ::= "case" <literal> ":" <lista_sentencias>
+<default> ::= "default" <separador> ":" <lista_sentencias>
+
+<break> ::= "break"
+<return> ::= "return" | "return" <separador> <expresion>
+
+<cin> ::= "cin" <inicio_paren> <id> <final_paren>
+<cout> ::= "cout" <inicio_paren> <literal> <final_paren>
+         | "cout" <inicio_paren> <id> <final_paren>
+         | "cout" <inicio_paren> <expresion> <final_paren>
+
+<valor> ::= <literal> | <id>
+<literal> ::= <numero> | <bool> | <char_literal> | <string_literal>
+<numero> ::= <entero>
+           | <flotante>
+           | <exponencial>
+           | <fraccion>
+<entero> ::= <digitoNoCero> <digito>* | "0"
+<flotante> ::= <entero> "." <digito>+
+<exponencial> ::= <entero> "e" <entero>
+<fraccion> ::= <entero> "/" <entero>
+             | <entero> "//" <entero>
+<bool> ::= "true" | "false"
+
+<char_literal> ::= "'" <caracter_c> "'"
+<string_literal> ::= "\"" <contenido> "\""
+<contenido_s> ::= <caracter_s> <contenido> | ε
+<caracter_s> ::= <letra>
+                | <digito>
+                | <simbolo_string>
+                | <espacio>
+<caracter_c> ::= <letra>
+                | <digito>
+                | <simbolo_char>
+<simbolo_string> ::= "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "(" | ")" | "-" | "+" | "=" | "[" | "]" | "{" | "}" | ";" | ":" | "'" | "," | "." | "<" | ">" | "/" | "?" | "|"
+<simbolo_char> ::= "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "(" | ")" | "-" | "+" | "=" | "[" | "]" | "{" | "}" | ";" | ":" | "\"" | "," | "." | "<" | ">" | "/" | "?" | "|"
+
+<comentario1Linea> ::= "ii" <comentario>
+<comentario> ::= <caracter_string>* <salto_linea>
+<bloque_comentarios> ::= <comentario> <bloque_comentarios> | <comentario>
+<comentarioLineas> ::= "{-" <bloque_comentarios> "-}"
+<salto_linea> ::= \n
+
+<id> ::= <letra> <letraNum>*
+<digito> ::= [0-9]
+<digitoNoCero> ::= [1-9]
+<letra> ::= [a-zA-Z_]
+<letraNum> ::= [a-zA-Z_0-9]
+<espacio> ::= " "
+<tipo> ::= "string" | "char" | "float" | "bool" | "int"
+<separador> ::= "~"
+<inicio_paren> ::= "<|"
+<final_paren> ::= "|>"
+<inicio_bloque> ::= "|:"
+<final_bloque> ::= ":|"
+<fin_expr> ::= "!"
+<inicio_indices> ::= "<<"
+<final_indices> ::= ">>"

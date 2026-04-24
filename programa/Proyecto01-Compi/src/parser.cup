@@ -1,15 +1,15 @@
 import java_cup.runtime.*;
 
 parser code {:
-    Lexer s;
+    Lexer lex;
 
-    public parser(Lexer s) {
-        this.s = s;
+    public parser(Lexer lex) {
+        this.lex = lex;
     }
 :};
 
 init with {: :};
-scan with {: return s.next_token(); :};
+scan with {: return lex.next_token(); :};
 
 // Terminales
 
@@ -34,72 +34,43 @@ terminal SEPARADOR, FIN_EXPR, COMA, DOS_PUNTOS;
 
 // No Terminales
 
-non terminal programa;
-non terminal main;
-non terminal funciones;
-non terminal funcion;
-non terminal lista_parametros;
-non terminal parametro;
-non terminal bloque;
-non terminal lista_sentencias;
-non terminal llamada_funcion;
-non terminal sentencia;
+non terminal programa, main, funciones, funcion;
+non terminal lista_parametros, parametro;
+non terminal bloque, lista_sentencias, sentencia;
+non terminal llamada_funcion, lista_expresiones;
 
-non terminal creacion;
-non terminal creacion_array;
-non terminal lista_expresiones;
-non terminal asignacion;
-non terminal asignacion_array;
-non terminal acceso_array;
-non terminal creacion_asignacion;
-non terminal creacion_asignacion_array;
-non terminal valores_array;
-non terminal lista_valores;
-non terminal elemento_valor;
+non terminal creacion, creacion_array, tipo_array;
+non terminal asignacion, asignacion_array, acceso_array;
+non terminal creacion_asignacion, creacion_asignacion_array;
+non terminal valores_array, lista_valores, elemento_valor;
 
-non terminal expresion;
-non terminal expresion_logica;
-non terminal expresion_conjuncion;
-non terminal expresion_negacion;
-non terminal expresion_relacional;
-non terminal expresion_aritmetica;
-non terminal expresion_termino;
-non terminal expresion_factor;
-non terminal expresion_potencia;
-non terminal expresion_unarios;
-non terminal expresion_valores;
+non terminal expresion, expresion_logica, expresion_conjuncion;
+non terminal expresion_negacion, expresion_relacional;
+non terminal expresion_aritmetica, expresion_termino;
+non terminal expresion_factor, expresion_potencia;
+non terminal expresion_unarios, expresion_valores;
 
-non terminal relacional;
-non terminal equal;
-non terminal n_equal;
-non terminal less_t;
-non terminal less_te;
-non terminal greather_t;
-non terminal greather_te;
-
+non terminal relacional, equal, n_equal, less_t, less_te, greather_t, greather_te;
 non terminal condicion;
-non terminal bloque_if_else;
-non terminal bloque_do_while;
-non terminal bloque_switch;
-non terminal bloque_casos;
-non terminal lista_casos;
-non terminal caso;
-non terminal default_case;
+non terminal bloque_if_else, bloque_do_while, bloque_switch;
+non terminal bloque_casos, lista_casos, caso, default_case;
 
-non terminal break_nt;
-non terminal return_nt;
-non terminal cin_nt;
-non terminal cout_nt;
-
-non terminal valor;
-non terminal literal;
-non terminal numero;
-non terminal bool_nt;
-non terminal char_nt;
-non terminal string_nt;
-non terminal tipo;
+non terminal break_nt, return_nt, cin_nt, cout_nt;
+non terminal literal, numero, bool_lit, tipo;
 
 // Inicio
 
 start with programa;
 
+// Precedencia
+
+// En la precedencia left los ultimos son los de mayor prioridad
+// En la precedencia right se agrupan los operadores de derecha a izquierda
+precedence left OR;
+precedence left AND;
+precedence left SUMA, RESTA;
+precedence left MULTI, DIV, MOD;
+precedence right POT;
+precedence right NOT;
+precedence right UMINUS;
+precedence right MASMAS, MENOSMENOS;
