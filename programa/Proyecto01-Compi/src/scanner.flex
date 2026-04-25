@@ -11,7 +11,6 @@ import java.io.*;
 %cup
 
 %{
-    TabSimb tablaSimbolos = new TabSimb();
     ManejadorErrores manejadorErrores;
     PrintWriter tokenWriter;
 
@@ -29,7 +28,6 @@ import java.io.*;
     public void cerrar() {
         if (tokenWriter != null) tokenWriter.close();
         if (manejadorErrores != null) manejadorErrores.cerrar();
-        tablaSimbolos.escribirArchivo("tabla_simbolos.txt");
     }
 
     StringBuffer string = new StringBuffer();
@@ -70,300 +68,283 @@ espacio          = {LineTerminator} | [ \t\f]
 
     "if"          
     { 
-        tokenWriter.println("Token: IF\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.IF, yyline, yycolumn, yytext()); 
+        tokenWriter.println("IF\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.IF); 
     }
 
     "else"        
     { 
-        tokenWriter.println("Token: ELSE\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.ELSE, yyline, yycolumn, yytext()); 
+        tokenWriter.println("ELSE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.ELSE); 
     }
     "do"          
     { 
-        tokenWriter.println("Token: DO\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.DO, yyline, yycolumn, yytext()); 
+        tokenWriter.println("DO\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.DO); 
     }
     "while"       
     { 
-        tokenWriter.println("Token: WHILE\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.WHILE, yyline, yycolumn, yytext()); 
+        tokenWriter.println("WHILE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.WHILE); 
     }
     "switch"      
     { 
-        tokenWriter.println("Token: SWITCH\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.SWITCH, yyline, yycolumn, yytext()); 
+        tokenWriter.println("SWITCH\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.SWITCH); 
     }
     "case"        
     { 
-        tokenWriter.println("Token: CASE\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.CASE, yyline, yycolumn, yytext()); 
+        tokenWriter.println("CASE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.CASE); 
     }
     "default"     
     { 
-        tokenWriter.println("Token: DEFAULT\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.DEFAULT, yyline, yycolumn, yytext()); 
+        tokenWriter.println("DEFAULT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.DEFAULT); 
     }
     "break"       
     { 
-        tokenWriter.println("Token: BREAK\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.BREAK, yyline, yycolumn, yytext()); 
+        tokenWriter.println("BREAK\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.BREAK); 
     }
     "return"      
     { 
-        tokenWriter.println("Token: RETURN\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.RETURN, yyline, yycolumn, yytext()); 
-        }
+        tokenWriter.println("RETURN\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.RETURN); 
+    }
     "cin"         
     { 
-        tokenWriter.println("Token: CIN\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.CIN, yyline, yycolumn, yytext()); 
+        tokenWriter.println("CIN\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.CIN); 
     }
     "cout"        
     { 
-        tokenWriter.println("Token: COUT\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.COUT, yyline, yycolumn, yytext()); 
+        tokenWriter.println("COUT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.COUT); 
     }
     "empty"       
     { 
-        tokenWriter.println("Token: EMPTY\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.EMPTY, yyline, yycolumn, yytext()); 
+        tokenWriter.println("EMPTY\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.EMPTY); 
     }
     "__main__"    
     { 
-        tokenWriter.println("Token: MAIN\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.MAIN, yyline, yycolumn, yytext()); 
+        tokenWriter.println("MAIN\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.MAIN); 
     }
     "string"      
     { 
-        tokenWriter.println("Token: STRING\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.STRING, yyline, yycolumn, yytext()); 
+        tokenWriter.println("STRING\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.STRING); 
     }
     "char"        
     { 
-        tokenWriter.println("Token: CHAR\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.CHAR, yyline, yycolumn, yytext()); 
+        tokenWriter.println("CHAR\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.CHAR); 
     }
     "float"       
     { 
-        tokenWriter.println("Token: FLOAT\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.FLOAT, yyline, yycolumn, yytext()); 
+        tokenWriter.println("FLOAT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.FLOAT); 
     }
     "bool"        
     { 
-        tokenWriter.println("Token: BOOL\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.BOOL, yyline, yycolumn, yytext()); 
+        tokenWriter.println("BOOL\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.BOOL); 
     }
     "int"         
     { 
-        tokenWriter.println("Token: INT\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.INT, yyline, yycolumn, yytext()); 
+        tokenWriter.println("INT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.INT); 
     }
     "true"        
     { 
-        tokenWriter.println("Token: TRUE\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.TRUE, yyline, yycolumn, yytext()); 
-        }
+        tokenWriter.println("TRUE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.TRUE); 
+    }
     "false"       
     { 
-        tokenWriter.println("Token: FALSE\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.FALSE, yyline, yycolumn, yytext()); 
+        tokenWriter.println("FALSE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.FALSE); 
     }
     "equal"       
     { 
-        tokenWriter.println("Token: EQUAL\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.EQUAL, yyline, yycolumn, yytext()); 
+        tokenWriter.println("EQUAL\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.EQUAL); 
     }
     "n_equal"     
     { 
-        tokenWriter.println("Token: N_EQUAL\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.N_EQUAL, yyline, yycolumn, yytext()); 
+        tokenWriter.println("N_EQUAL\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.N_EQUAL); 
     }
     "less_t"      
     { 
-        tokenWriter.println("Token: LESS_T\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.LESS_T, yyline, yycolumn, yytext()); 
+        tokenWriter.println("LESS_T\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.LESS_T); 
     }
     "less_te"     
     { 
-        tokenWriter.println("Token: LESS_TE\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.LESS_TE, yyline, yycolumn, yytext()); 
+        tokenWriter.println("LESS_TE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.LESS_TE); 
     }
     "greather_t"  
     { 
-        tokenWriter.println("Token: GREATHER_T\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.GREATHER_T, yyline, yycolumn, yytext()); 
+        tokenWriter.println("GREATHER_T\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.GREATHER_T); 
     }
     "greather_te" 
     { 
-        tokenWriter.println("Token: GREATHER_TE\tLexema: " + yytext() + "\tTabla: keywords\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.GREATHER_TE, yyline, yycolumn, yytext()); 
+        tokenWriter.println("GREATHER_TE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.GREATHER_TE); 
     }
 
     {id}  
     {
-        if (!tablaSimbolos.existe(yytext())) {
-            tablaSimbolos.agregar(yytext(), "-", "identificador", yyline + 1, yycolumn + 1);
-        }
-        tokenWriter.println("Token: ID\tLexema: " + yytext() + "\tTabla: tablaSimbolos\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1));
-        return new Symbol(sym.ID, yyline, yycolumn, yytext());
+        tokenWriter.println("ID\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.ID, yytext());
     }
 
     {exponencial}  
     { 
-        if (!tablaSimbolos.existe("exp_" + yytext())) {
-            tablaSimbolos.agregar("exp_" + yytext(), "int", "literal", yyline + 1, yycolumn + 1, yytext());
-        }
-        tokenWriter.println("Token: EXPONENCIAL\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.EXPONENCIAL, yyline, yycolumn, yytext()); 
+        tokenWriter.println("EXPONENCIAL\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.EXPONENCIAL, yytext()); 
     }
 
     {fraccion}     
     { 
-        if (!tablaSimbolos.existe("frac_" + yytext())) {
-            tablaSimbolos.agregar("frac_" + yytext(), "float", "literal", yyline + 1, yycolumn + 1, yytext());
-        }
-        tokenWriter.println("Token: FRACCION\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.FRACCION, yyline, yycolumn, yytext()); 
+        tokenWriter.println("FRACCION\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.FRACCION, yytext()); 
     }
 
     {flotante}     
     { 
-        if (!tablaSimbolos.existe("float_" + yytext())) {
-            tablaSimbolos.agregar("float_" + yytext(), "float", "literal", yyline + 1, yycolumn + 1, yytext());
-        }
-        tokenWriter.println("Token: FLOTANTE\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.FLOTANTE, yyline, yycolumn, yytext()); 
+        tokenWriter.println("FLOTANTE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.FLOTANTE, yytext()); 
     }
 
     {entero}       
     { 
-        if (!tablaSimbolos.existe("int_" + yytext())) {
-            tablaSimbolos.agregar("int_" + yytext(), "int", "literal", yyline + 1, yycolumn + 1, yytext());
-        }
-        tokenWriter.println("Token: ENTERO\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.ENTERO, yyline, yycolumn, yytext()); 
+        tokenWriter.println("ENTERO\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.ENTERO, yytext()); 
     }
 
     {charLiteral}  
     { 
-        if (!tablaSimbolos.existe("char_" + yytext())) {
-            tablaSimbolos.agregar("char_" + yytext(), "char", "literal", yyline + 1, yycolumn + 1, yytext());
-        }
-        tokenWriter.println("Token: CHAR_LIT\tLexema: " + yytext() + "\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.CHAR_LIT, yyline, yycolumn, yytext()); 
+        tokenWriter.println("CHAR_LIT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.CHAR_LIT, yytext()); 
     }
 
     \"  { string.setLength(0); yybegin(CADENA); }
 
     "<-"  
     { 
-        tokenWriter.println("Token: ASIGNAR\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.ASIGNAR, yyline, yycolumn, yytext()); 
+        tokenWriter.println("ASIGNAR\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.ASIGNAR); 
     }
     "<<"  
     { 
-        tokenWriter.println("Token: INICIO_INDICES\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.INICIO_INDICES, yyline, yycolumn, yytext()); 
+        tokenWriter.println("INICIO_INDICES\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.INICIO_INDICES); 
     }
     ">>"  
     { 
-        tokenWriter.println("Token: FINAL_INDICES\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.FINAL_INDICES, yyline, yycolumn, yytext()); 
+        tokenWriter.println("FINAL_INDICES\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.FINAL_INDICES); 
     }
     "<|"  
     { 
-        tokenWriter.println("Token: INICIO_PAREN\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.INICIO_PAREN, yyline, yycolumn, yytext()); 
+        tokenWriter.println("INICIO_PAREN\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.INICIO_PAREN); 
     }
     "|>"  
     { 
-        tokenWriter.println("Token: FINAL_PAREN\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.FINAL_PAREN, yyline, yycolumn, yytext()); 
+        tokenWriter.println("FINAL_PAREN\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.FINAL_PAREN); 
     }
     "|:"  
     { 
-        tokenWriter.println("Token: INICIO_BLOQUE\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.INICIO_BLOQUE, yyline, yycolumn, yytext()); 
+        tokenWriter.println("INICIO_BLOQUE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.INICIO_BLOQUE); 
     }
     ":|"  
-    { tokenWriter.println("Token: FINAL_BLOQUE\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-    return new Symbol(sym.FINAL_BLOQUE, yyline, yycolumn, yytext()); 
+    { 
+        tokenWriter.println("FINAL_BLOQUE\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1));
+        return symbol(sym.FINAL_BLOQUE); 
     }
     "++"  
     { 
-        tokenWriter.println("Token: MASMAS\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.MASMAS, yyline, yycolumn, yytext()); 
+        tokenWriter.println("MASMAS\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.MASMAS); 
     }
     "--"  
     { 
-        tokenWriter.println("Token: MENOSMENOS\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.MENOSMENOS, yyline, yycolumn, yytext()); 
+        tokenWriter.println("MENOSMENOS\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.MENOSMENOS); 
     }
     "+"   
     { 
-        tokenWriter.println("Token: SUMA\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.SUMA, yyline, yycolumn, yytext()); 
+        tokenWriter.println("SUMA\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.SUMA); 
     }
     "-"   
     { 
-        tokenWriter.println("Token: RESTA\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.RESTA, yyline, yycolumn, yytext()); 
+        tokenWriter.println("RESTA\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.RESTA); 
     }
     "*"   
     { 
-        tokenWriter.println("Token: MULTI\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.MULTI, yyline, yycolumn, yytext()); 
+        tokenWriter.println("MULTI\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.MULTI); 
     }
     "/"   
     { 
-        tokenWriter.println("Token: DIV\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.DIV, yyline, yycolumn, yytext()); 
+        tokenWriter.println("DIV\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.DIV); 
     }
     "%"   
     { 
-        tokenWriter.println("Token: MOD\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.MOD, yyline, yycolumn, yytext()); 
+        tokenWriter.println("MOD\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.MOD); 
     }
     "^"   
     { 
-        tokenWriter.println("Token: POT\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.POT, yyline, yycolumn, yytext()); 
+        tokenWriter.println("POT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.POT); 
     }
     "#"   
     { 
-        tokenWriter.println("Token: OR\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.OR, yyline, yycolumn, yytext()); 
+        tokenWriter.println("OR\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.OR); 
     }
     "@"   
     { 
-        tokenWriter.println("Token: AND\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.AND, yyline, yycolumn, yytext()); 
+        tokenWriter.println("AND\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.AND); 
     }
     "$"   
     { 
-        tokenWriter.println("Token: NOT\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.NOT, yyline, yycolumn, yytext()); 
+        tokenWriter.println("NOT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.NOT); 
     }
     "~"   
     { 
-        tokenWriter.println("Token: SEPARADOR\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.SEPARADOR, yyline, yycolumn, yytext()); 
+        tokenWriter.println("SEPARADOR\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.SEPARADOR); 
     }
     "!"   
     { 
-        tokenWriter.println("Token: FIN_EXPR\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.FIN_EXPR, yyline, yycolumn, yytext()); 
+        tokenWriter.println("FIN_EXPR\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.FIN_EXPR); 
     }
     ","   
     { 
-        tokenWriter.println("Token: COMA\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.COMA, yyline, yycolumn, yytext()); 
-        }
+        tokenWriter.println("COMA\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.COMA); 
+    }
     ":"   
     { 
-        tokenWriter.println("Token: DOS_PUNTOS\tLexema: " + yytext() + "\tTabla: operadores\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1)); 
-        return new Symbol(sym.DOS_PUNTOS, yyline, yycolumn, yytext()); 
+        tokenWriter.println("DOS_PUNTOS\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
+        return symbol(sym.DOS_PUNTOS); 
     }
 
     {espacio}  { /* ignorar */ }
@@ -389,11 +370,8 @@ espacio          = {LineTerminator} | [ \t\f]
     \"              { 
                         yybegin(YYINITIAL);
                         String valor = string.toString();
-                        if (!tablaSimbolos.existe("string_" + valor)) {
-                            tablaSimbolos.agregar("string_" + valor, "string", "literal", yyline + 1, yycolumn + 1, valor);
-                        }
-                        tokenWriter.println("Token: STRING_LITERAL\tLexema: \"" + valor + "\"\tTabla: constantes\tLinea: " + (yyline+1) + "\tCol: " + (yycolumn+1));
-                        return new Symbol(sym.STRING_LITERAL, yyline, yycolumn, valor);
+                        tokenWriter.println("STRING_LITERAL\t\"" + valor + "\"\t" + (yyline+1) + "\t" + (yycolumn+1));
+                        return symbol(sym.STRING_LITERAL, valor);
                     } 
     [^\n\r\"\\]+     { string.append(yytext()); }
     \\t              { string.append('\t'); }
