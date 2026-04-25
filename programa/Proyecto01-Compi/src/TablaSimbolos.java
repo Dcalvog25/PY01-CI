@@ -193,6 +193,13 @@ public class TablaSimbolos {
         return null;
     }
 
+    public String getParentScope() {
+        if (scopeStack.size() >= 2) {
+            return scopeStack.get(scopeStack.size() - 2);
+        }
+        return globalHash;
+    }
+
     public String getCurrentScope() {
         return currentHash;
     }

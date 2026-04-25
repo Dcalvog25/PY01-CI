@@ -128,6 +128,14 @@ parametro ::= tipo:t SEPARADOR ID:i
                   TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
                   nodo.setCategoria("parametro");
                   tabla.agregarNodo(nodo);
+
+                  TablaSimbolos.NodoToken nodoFuncion = tabla.buscarSimboloEnScope(
+                      tabla.getCurrentScope(),
+                      tabla.getParentScope()
+                  );
+                  if (nodoFuncion != null) {
+                      nodoFuncion.agregarParametro(new TablaSimbolos.Parametro(t, i.toString()));
+                  }
               :};
 
 bloque ::= INICIO_BLOQUE lista_sentencias FINAL_BLOQUE;
