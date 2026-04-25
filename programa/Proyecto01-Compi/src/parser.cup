@@ -2,16 +2,32 @@ import java_cup.runtime.*;
 
 parser code {:
     Lexer lex;
+    TablaSimbolos tabla;
+    int ifCount = 0;
+    int whileCount = 0;
+    int switchCount = 0;
+
+    private int lastLine = 1;
+    private int lastColumn = 1;
 
     public parser(Lexer lex) {
         this.lex = lex;
+        this.tabla = new TablaSimbolos();
+    }
+
+    @Override
+    public Symbol scan() throws Exception {
+        Symbol sym = super.scan();
+        if (sym != null) {
+            if (sym.left >= 0) lastLine = sym.left + 1;
+            if (sym.right >= 0) lastColumn = sym.right + 1;
+        }
+        return sym;
     }
 :};
 
 init with {: :};
 scan with {: return lex.next_token(); :};
-
-// Terminales
 
 terminal IF, ELSE, DO, WHILE, SWITCH, CASE, DEFAULT, BREAK, RETURN;
 terminal CIN, COUT, EMPTY, MAIN;
@@ -32,14 +48,12 @@ terminal SUMA, RESTA, MULTI, DIV, MOD, POT;
 terminal OR, AND, NOT;
 terminal SEPARADOR, FIN_EXPR, COMA, DOS_PUNTOS;
 
-// No Terminales
-
 non terminal programa, main, funciones, funcion;
 non terminal lista_parametros, parametro;
 non terminal bloque, lista_sentencias, sentencia;
 non terminal llamada_funcion, lista_expresiones;
 
-non terminal creacion, creacion_array, tipo_array;
+non terminal creacion, creacion_array;
 non terminal asignacion, asignacion_array, acceso_array;
 non terminal creacion_asignacion, creacion_asignacion_array;
 non terminal valores_array, lista_valores, elemento_valor;
@@ -62,41 +76,53 @@ non terminal bloque_if_else, bloque_do_while, bloque_switch;
 non terminal bloque_casos, lista_casos, caso, default_case;
 
 non terminal break_nt, return_nt, cin_nt, cout_nt;
-non terminal literal, numero, bool_lit, tipo;
+non terminal literal, numero, bool_lit;
 
-// Inicio
+non terminal String tipo, tipo_array;
 
 start with programa;
 
-// Precedencia
-
-/* precedence left OR;
-precedence left AND;
-precedence left SUMA, RESTA;
-precedence left MULTI, DIV, MOD;
-precedence right POT;
-precedence right NOT;
-precedence right UMINUS;
-precedence right MASMAS, MENOSMENOS;
-*/
-
-// Reglas de Producción
-
 programa ::= funciones main
-           | main;
+             {: tabla.escribirArchivo(); :}
+           | main
+             {: tabla.escribirArchivo(); :};
 
-main ::= EMPTY SEPARADOR MAIN INICIO_PAREN FINAL_PAREN bloque;
+main ::= EMPTY SEPARADOR MAIN INICIO_PAREN FINAL_PAREN
+         {: tabla.crearNuevoScope("main"); :}
+         bloque
+         {: tabla.salirDelScope(); :};
 
 funciones ::= funcion funciones
             | funcion;
 
-funcion ::= tipo SEPARADOR ID INICIO_PAREN lista_parametros FINAL_PAREN bloque
-          | tipo SEPARADOR ID INICIO_PAREN FINAL_PAREN bloque;
+funcion ::= tipo:t SEPARADOR ID:i INICIO_PAREN lista_parametros FINAL_PAREN
+            {:
+                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                nodo.setCategoria("funcion");
+                tabla.agregarNodo(nodo);
+                tabla.crearNuevoScope(i.toString());
+            :}
+            bloque
+            {: tabla.salirDelScope(); :}
+          | tipo:t SEPARADOR ID:i INICIO_PAREN FINAL_PAREN
+            {:
+                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                nodo.setCategoria("funcion");
+                tabla.agregarNodo(nodo);
+                tabla.crearNuevoScope(i.toString());
+            :}
+            bloque
+            {: tabla.salirDelScope(); :};
 
 lista_parametros ::= parametro COMA lista_parametros
                    | parametro;
 
-parametro ::= tipo SEPARADOR ID;
+parametro ::= tipo:t SEPARADOR ID:i
+              {:
+                  TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                  nodo.setCategoria("parametro");
+                  tabla.agregarNodo(nodo);
+              :};
 
 bloque ::= INICIO_BLOQUE lista_sentencias FINAL_BLOQUE;
 
@@ -119,11 +145,22 @@ sentencia ::= creacion FIN_EXPR
             | cin_nt FIN_EXPR
             | cout_nt FIN_EXPR;
 
-creacion ::= tipo SEPARADOR ID;
+creacion ::= tipo:t SEPARADOR ID:i
+             {:
+                 TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                 nodo.setCategoria("variable");
+                 tabla.agregarNodo(nodo);
+             :};
 
-creacion_array ::= tipo_array SEPARADOR ID INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES;
+creacion_array ::= tipo_array:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES
+                   {:
+                       TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                       nodo.setCategoria("arreglo");
+                       tabla.agregarNodo(nodo);
+                   :};
 
-tipo_array ::= INT | FLOAT;
+tipo_array ::= INT  {: RESULT = "int";   :}
+             | FLOAT {: RESULT = "float"; :};
 
 lista_expresiones ::= expresion COMA lista_expresiones
                     | expresion;
@@ -134,9 +171,19 @@ asignacion_array ::= ID INICIO_INDICES expresion FINAL_INDICES INICIO_INDICES ex
 
 acceso_array ::= ID INICIO_INDICES expresion FINAL_INDICES INICIO_INDICES expresion FINAL_INDICES;
 
-creacion_asignacion ::= tipo SEPARADOR ID ASIGNAR expresion;
+creacion_asignacion ::= tipo:t SEPARADOR ID:i ASIGNAR expresion
+                        {:
+                            TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                            nodo.setCategoria("variable");
+                            tabla.agregarNodo(nodo);
+                        :};
 
-creacion_asignacion_array ::= tipo_array SEPARADOR ID INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES ASIGNAR valores_array;
+creacion_asignacion_array ::= tipo_array:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES ASIGNAR valores_array
+                               {:
+                                   TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                                   nodo.setCategoria("arreglo");
+                                   tabla.agregarNodo(nodo);
+                               :};
 
 valores_array ::= INICIO_BLOQUE lista_valores FINAL_BLOQUE;
 
@@ -166,35 +213,30 @@ siguientes_terminos_and ::= AND expresion_negacion siguientes_terminos_and
                           | /* epsilon */;
 
 expresion_negacion ::= NOT expresion_negacion
-                    | expresion_relacional;
+                     | expresion_relacional;
 
 expresion_relacional ::= expresion_aritmetica
                        | comparacion;
 
 comparacion ::= equal
-             | n_equal
-             | less_t
-             | less_te
-             | greather_t
-             | greather_te;
+              | n_equal
+              | less_t
+              | less_te
+              | greather_t
+              | greather_te;
 
-equal ::= EQUAL INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
-
-n_equal ::= N_EQUAL INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
-
-less_t ::= LESS_T INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
-
-less_te ::= LESS_TE INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
-
-greather_t ::= GREATHER_T INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
-
+equal       ::= EQUAL       INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+n_equal     ::= N_EQUAL     INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+less_t      ::= LESS_T      INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+less_te     ::= LESS_TE     INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+greather_t  ::= GREATHER_T  INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
 greather_te ::= GREATHER_TE INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
 
 expresion_aritmetica ::= primer_termino_arit siguientes_terminos_arit;
 
 primer_termino_arit ::= expresion_termino;
 
-siguientes_terminos_arit ::= SUMA expresion_termino siguientes_terminos_arit
+siguientes_terminos_arit ::= SUMA  expresion_termino siguientes_terminos_arit
                            | RESTA expresion_termino siguientes_terminos_arit
                            | /* epsilon */;
 
@@ -203,8 +245,8 @@ expresion_termino ::= primer_factor_term siguientes_factores_term;
 primer_factor_term ::= expresion_factor;
 
 siguientes_factores_term ::= MULTI expresion_factor siguientes_factores_term
-                           | DIV expresion_factor siguientes_factores_term
-                           | MOD expresion_factor siguientes_factores_term
+                           | DIV   expresion_factor siguientes_factores_term
+                           | MOD   expresion_factor siguientes_factores_term
                            | /* epsilon */;
 
 expresion_factor ::= primer_potencia siguientes_potencias;
@@ -231,12 +273,42 @@ expresion_valores ::= literal
 
 condicion ::= expresion_logica;
 
-bloque_if_else ::= IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque
-                 | IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque ELSE SEPARADOR bloque;
+bloque_if_else ::= IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN
+                   {:
+                       ifCount++;
+                       tabla.crearNuevoScope("if" + ifCount + "_" + tabla.getCurrentScope());
+                   :}
+                   bloque
+                   {: tabla.salirDelScope(); :}
+                 | IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN
+                   {:
+                       ifCount++;
+                       tabla.crearNuevoScope("if" + ifCount + "_" + tabla.getCurrentScope());
+                   :}
+                   bloque
+                   {:
+                       tabla.salirDelScope();
+                       ifCount++;
+                       tabla.crearNuevoScope("else" + ifCount + "_" + tabla.getCurrentScope());
+                   :}
+                   ELSE SEPARADOR bloque
+                   {: tabla.salirDelScope(); :};
 
-bloque_do_while ::= DO SEPARADOR bloque WHILE SEPARADOR INICIO_PAREN condicion FINAL_PAREN FIN_EXPR;
+bloque_do_while ::= DO SEPARADOR
+                    {:
+                        whileCount++;
+                        tabla.crearNuevoScope("while" + whileCount + "_" + tabla.getCurrentScope());
+                    :}
+                    bloque WHILE SEPARADOR INICIO_PAREN condicion FINAL_PAREN FIN_EXPR
+                    {: tabla.salirDelScope(); :};
 
-bloque_switch ::= SWITCH SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque_casos;
+bloque_switch ::= SWITCH SEPARADOR INICIO_PAREN condicion FINAL_PAREN
+                  {:
+                      switchCount++;
+                      tabla.crearNuevoScope("switch" + switchCount + "_" + tabla.getCurrentScope());
+                  :}
+                  bloque_casos
+                  {: tabla.salirDelScope(); :};
 
 bloque_casos ::= INICIO_BLOQUE lista_casos FINAL_BLOQUE
                | INICIO_BLOQUE lista_casos default_case FINAL_BLOQUE;
@@ -272,8 +344,8 @@ numero ::= ENTERO
 bool_lit ::= TRUE
            | FALSE;
 
-tipo ::= STRING
-       | CHAR
-       | FLOAT
-       | BOOL
-       | INT;
+tipo ::= STRING {: RESULT = "string"; :}
+       | CHAR   {: RESULT = "char";   :}
+       | FLOAT  {: RESULT = "float";  :}
+       | BOOL   {: RESULT = "bool";   :}
+       | INT    {: RESULT = "int";    :};
