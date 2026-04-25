@@ -41,13 +41,16 @@ Inicio -> <programa> ::= <funciones> <main> | <main>
 <elemento_valor> ::= <expresion> | <valores_array>
 
 <expresion> ::= <expresion_logica>
-<expresion_logica> ::= <expresion_conjuncion> <resto_logica>
-<resto_logica> ::= "#" <expresion_conjuncion> <resto_logica>
-                 | ε
 
-<expresion_conjuncion> ::= <expresion_negacion> <resto_conjuncion>
-<resto_conjuncion> ::= "@" <expresion_negacion> <resto_conjuncion>
-                     | ε
+<expresion_logica> ::= <primer_termino_or> <siguientes_terminos_or>
+<primer_termino_or> ::= <expresion_conjuncion>
+<siguientes_terminos_or> ::= "#" <expresion_conjuncion> <siguientes_terminos_or>
+                           | ε
+
+<expresion_conjuncion> ::= <primer_termino_and> <siguientes_terminos_and>
+<primer_termino_and> ::= <expresion_negacion>
+<siguientes_terminos_and> ::= "@" <expresion_negacion> <siguientes_terminos_and>
+                            | ε
 
 <expresion_negacion> ::= "$" <expresion_negacion>
                        | <expresion_relacional>
@@ -69,20 +72,23 @@ Inicio -> <programa> ::= <funciones> <main> | <main>
 <greather_t> ::= "greather_t" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
 <greather_te> ::= "greather_te" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
 
-<expresion_aritmetica> ::= <expresion_termino> <resto_aritmetica>
-<resto_aritmetica> ::= "+" <expresion_termino> <resto_aritmetica>
-                     | "-" <expresion_termino> <resto_aritmetica>
-                     | ε
+<expresion_aritmetica> ::= <primer_termino_arit> <siguientes_terminos_arit>
+<primer_termino_arit> ::= <expresion_termino>
+<siguientes_terminos_arit> ::= "+" <expresion_termino> <siguientes_terminos_arit>
+                             | "-" <expresion_termino> <siguientes_terminos_arit>
+                             | ε
 
-<expresion_termino> ::= <expresion_factor> <resto_termino>
-<resto_termino> ::= "*" <expresion_factor> <resto_termino>
-                  | "/" <expresion_factor> <resto_termino>
-                  | "%" <expresion_factor> <resto_termino>
-                  | ε
+<expresion_termino> ::= <primer_factor_term> <siguientes_factores_term>
+<primer_factor_term> ::= <expresion_factor>
+<siguientes_factores_term> ::= "*" <expresion_factor> <siguientes_factores_term>
+                             | "/" <expresion_factor> <siguientes_factores_term>
+                             | "%" <expresion_factor> <siguientes_factores_term>
+                             | ε
 
-<expresion_factor> ::= <expresion_potencia> <resto_factor>
-<resto_factor> ::= "^" <expresion_potencia> <resto_factor>
-                 | ε
+<expresion_factor> ::= <primer_potencia> <siguientes_potencias>
+<primer_potencia> ::= <expresion_potencia>
+<siguientes_potencias> ::= "^" <expresion_potencia> <siguientes_potencias>
+                         | ε
 
 <expresion_potencia> ::= <expresion_unarios>
 
