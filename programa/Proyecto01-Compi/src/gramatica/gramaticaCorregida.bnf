@@ -3,7 +3,7 @@ Inicio -> <programa> ::= <funciones> <main> | <main>
 <main> ::= "empty" <separador> "__main__" <inicio_paren> <final_paren> <bloque>
 <funciones> ::= <funcion> <funciones> | <funcion>
 <funcion> ::= <tipo> <separador> <id> <inicio_paren> <lista_parametros> <final_paren> <bloque>
-            | <tipo> <separador> <id> <inicio_paren> <final_paren> <bloque
+            | <tipo> <separador> <id> <inicio_paren> <final_paren> <bloque>
 <lista_parametros> ::= <parametro> "," <lista_parametros> | <parametro>
 <parametro> ::= <tipo> <separador> <id>
 <bloque> ::= <inicio_bloque> <lista_sentencias> <final_bloque>
@@ -47,15 +47,15 @@ Inicio -> <programa> ::= <funciones> <main> | <main>
                          | <expresion_negacion>
 <expresion_negacion> ::= "$" <expresion_negacion>
                        | <expresion_relacional>
-<expresion_relacional> ::= <relacional>
-                         | <expresion_aritmetica>
+<expresion_relacional> ::= <expresion_aritmetica>
+                         | <comparacion>
 
-<relacional> ::= <equal>
-               | <n_equal>
-               | <less_t>
-               | <less_te>
-               | <greather_t>
-               | <greather_te>
+<comparacion> ::= <equal>
+                | <n_equal>
+                | <less_t>
+                | <less_te>
+                | <greather_t>
+                | <greather_te>
 
 <equal> ::= "equal" <inicio_paren> <expresion> "," <expresion> <final_paren>
 <n_equal> ::= "n_equal" <inicio_paren> <expresion> "," <expresion> <final_paren>
@@ -118,7 +118,7 @@ Inicio -> <programa> ::= <funciones> <main> | <main>
 
 <char_literal> ::= "'" <caracter_c> "'"
 <string_literal> ::= "\"" <contenido> "\""
-<contenido_s> ::= <caracter_s> <contenido> | ε
+<contenido> ::= <caracter_s> <contenido> | ε
 <caracter_s> ::= <letra>
                 | <digito>
                 | <simbolo_string>
@@ -130,7 +130,7 @@ Inicio -> <programa> ::= <funciones> <main> | <main>
 <simbolo_char> ::= "!" | "@" | "#" | "$" | "%" | "^" | "&" | "*" | "(" | ")" | "-" | "+" | "=" | "[" | "]" | "{" | "}" | ";" | ":" | "\"" | "," | "." | "<" | ">" | "/" | "?" | "|"
 
 <comentario1Linea> ::= "ii" <comentario>
-<comentario> ::= <caracter_string>* <salto_linea>
+<comentario> ::= <caracter_s>* <salto_linea>
 <bloque_comentarios> ::= <comentario> <bloque_comentarios> | <comentario>
 <comentarioLineas> ::= "{-" <bloque_comentarios> "-}"
 <salto_linea> ::= \n
