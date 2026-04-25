@@ -135,27 +135,27 @@ espacio          = {LineTerminator} | [ \t\f]
     "string"      
     { 
         tokenWriter.println("STRING\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
-        return symbol(sym.STRING); 
+        return symbol(sym.STRING, yytext()); 
     }
     "char"        
     { 
         tokenWriter.println("CHAR\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
-        return symbol(sym.CHAR); 
+        return symbol(sym.CHAR, yytext()); 
     }
     "float"       
     { 
         tokenWriter.println("FLOAT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
-        return symbol(sym.FLOAT); 
+        return symbol(sym.FLOAT, yytext()); 
     }
     "bool"        
     { 
         tokenWriter.println("BOOL\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
-        return symbol(sym.BOOL); 
+        return symbol(sym.BOOL, yytext()); 
     }
     "int"         
     { 
         tokenWriter.println("INT\t" + yytext() + "\t" + (yyline+1) + "\t" + (yycolumn+1)); 
-        return symbol(sym.INT); 
+        return symbol(sym.INT, yytext()); 
     }
     "true"        
     { 

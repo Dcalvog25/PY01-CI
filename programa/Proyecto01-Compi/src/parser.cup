@@ -59,6 +59,7 @@ non terminal lista_parametros, parametro;
 non terminal bloque, lista_sentencias, sentencia;
 non terminal llamada_funcion, lista_expresiones;
 
+non terminal tipo, tipo_array;
 non terminal creacion, creacion_array;
 non terminal asignacion, asignacion_array, acceso_array;
 non terminal creacion_asignacion, creacion_asignacion_array;
@@ -84,7 +85,6 @@ non terminal bloque_casos, lista_casos, caso, default_case;
 non terminal break_nt, return_nt, cin_nt, cout_nt;
 non terminal literal, numero, bool_lit;
 
-non terminal String tipo, tipo_array;
 
 start with programa;
 
@@ -173,8 +173,8 @@ creacion_array ::= tipo_array:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDIC
                        tabla.agregarNodo(nodo);
                    :};
 
-tipo_array ::= INT   {: RESULT = "int";   :}
-             | FLOAT {: RESULT = "float"; :};
+tipo_array ::= INT
+             | FLOAT;
 
 lista_expresiones ::= expresion COMA lista_expresiones
                     | expresion;
@@ -353,9 +353,9 @@ numero ::= ENTERO
 bool_lit ::= TRUE
            | FALSE;
 
-tipo ::= STRING {: RESULT = "string"; :}
-       | CHAR   {: RESULT = "char";   :}
-       | FLOAT  {: RESULT = "float";  :}
-       | BOOL   {: RESULT = "bool";   :}
-       | INT    {: RESULT = "int";    :};
+tipo ::= STRING
+       | CHAR
+       | FLOAT
+       | BOOL
+       | INT;
 
