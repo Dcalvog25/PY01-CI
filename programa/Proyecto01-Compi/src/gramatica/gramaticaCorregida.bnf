@@ -41,12 +41,17 @@ Inicio -> <programa> ::= <funciones> <main> | <main>
 <elemento_valor> ::= <expresion> | <valores_array>
 
 <expresion> ::= <expresion_logica>
-<expresion_logica> ::= <expresion_conjuncion> "#" <expresion_logica>
-                     | <expresion_conjuncion>
-<expresion_conjuncion> ::= <expresion_negacion> "@" <expresion_conjuncion>
-                         | <expresion_negacion>
+<expresion_logica> ::= <expresion_conjuncion> <resto_logica>
+<resto_logica> ::= "#" <expresion_conjuncion> <resto_logica>
+                 | ε
+
+<expresion_conjuncion> ::= <expresion_negacion> <resto_conjuncion>
+<resto_conjuncion> ::= "@" <expresion_negacion> <resto_conjuncion>
+                     | ε
+
 <expresion_negacion> ::= "$" <expresion_negacion>
                        | <expresion_relacional>
+
 <expresion_relacional> ::= <expresion_aritmetica>
                          | <comparacion>
 
@@ -57,27 +62,35 @@ Inicio -> <programa> ::= <funciones> <main> | <main>
                 | <greather_t>
                 | <greather_te>
 
-<equal> ::= "equal" <inicio_paren> <expresion> "," <expresion> <final_paren>
-<n_equal> ::= "n_equal" <inicio_paren> <expresion> "," <expresion> <final_paren>
+<equal> ::= "equal" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
+<n_equal> ::= "n_equal" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
 <less_t> ::= "less_t" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
 <less_te> ::= "less_te" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
 <greather_t> ::= "greather_t" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
 <greather_te> ::= "greather_te" <inicio_paren> <expresion_aritmetica> "," <expresion_aritmetica> <final_paren>
 
-<expresion_aritmetica> ::= <expresion_termino> "+" <expresion_aritmetica>
-                         | <expresion_termino> "-" <expresion_aritmetica>
-                         | <expresion_termino>
-<expresion_termino> ::= <expresion_factor> "*" <expresion_termino>
-                      | <expresion_factor> "/" <expresion_termino>
-                      | <expresion_factor> "%" <expresion_termino>
-                      | <expresion_factor>
-<expresion_factor> ::= <expresion_potencia> "^" <expresion_factor>
-                     | <expresion_potencia>
+<expresion_aritmetica> ::= <expresion_termino> <resto_aritmetica>
+<resto_aritmetica> ::= "+" <expresion_termino> <resto_aritmetica>
+                     | "-" <expresion_termino> <resto_aritmetica>
+                     | ε
+
+<expresion_termino> ::= <expresion_factor> <resto_termino>
+<resto_termino> ::= "*" <expresion_factor> <resto_termino>
+                  | "/" <expresion_factor> <resto_termino>
+                  | "%" <expresion_factor> <resto_termino>
+                  | ε
+
+<expresion_factor> ::= <expresion_potencia> <resto_factor>
+<resto_factor> ::= "^" <expresion_potencia> <resto_factor>
+                 | ε
+
 <expresion_potencia> ::= <expresion_unarios>
+
 <expresion_unarios> ::= "++" (<id>|<acceso_array>)
                       | "--" (<id>|<acceso_array>)
                       | "-" <numero>
                       | <expresion_valores>
+
 <expresion_valores> ::= <literal>
                       | <id>
                       | <acceso_array>
