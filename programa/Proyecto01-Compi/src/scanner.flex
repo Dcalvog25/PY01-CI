@@ -48,7 +48,7 @@ id           = {letra}({digito}|{letra})*
 entero       = 0|{digitoNoCero}{digito}*
 flotante     = (0\.0|((0|-?{digitoNoCero}{digito}*)\.{digito}*{digitoNoCero}0*))
 exponencial  = {entero}e{entero}
-fraccion     = -?{entero}\/{entero}
+fraccion     = -?{entero}(\/\/?){entero}
 charLiteral  = \' [^\'\n] \'
 
 LineTerminator   = \r|\n|\r\n

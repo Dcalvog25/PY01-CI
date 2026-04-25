@@ -50,7 +50,13 @@ non terminal expresion_aritmetica, expresion_termino;
 non terminal expresion_factor, expresion_potencia;
 non terminal expresion_unarios, expresion_valores;
 
-non terminal relacional, equal, n_equal, less_t, less_te, greather_t, greather_te;
+non terminal primer_termino_or, siguientes_terminos_or;
+non terminal primer_termino_and, siguientes_terminos_and;
+non terminal primer_termino_arit, siguientes_terminos_arit;
+non terminal primer_factor_term, siguientes_factores_term;
+non terminal primer_potencia, siguientes_potencias;
+
+non terminal comparacion, equal, n_equal, less_t, less_te, greather_t, greather_te;
 non terminal condicion;
 non terminal bloque_if_else, bloque_do_while, bloque_switch;
 non terminal bloque_casos, lista_casos, caso, default_case;
@@ -64,9 +70,7 @@ start with programa;
 
 // Precedencia
 
-// En la precedencia left los ultimos son los de mayor prioridad
-// En la precedencia right se agrupan los operadores de derecha a izquierda
-precedence left OR;
+/* precedence left OR;
 precedence left AND;
 precedence left SUMA, RESTA;
 precedence left MULTI, DIV, MOD;
@@ -74,3 +78,202 @@ precedence right POT;
 precedence right NOT;
 precedence right UMINUS;
 precedence right MASMAS, MENOSMENOS;
+*/
+
+// Reglas de Producción
+
+programa ::= funciones main
+           | main;
+
+main ::= EMPTY SEPARADOR MAIN INICIO_PAREN FINAL_PAREN bloque;
+
+funciones ::= funcion funciones
+            | funcion;
+
+funcion ::= tipo SEPARADOR ID INICIO_PAREN lista_parametros FINAL_PAREN bloque
+          | tipo SEPARADOR ID INICIO_PAREN FINAL_PAREN bloque;
+
+lista_parametros ::= parametro COMA lista_parametros
+                   | parametro;
+
+parametro ::= tipo SEPARADOR ID;
+
+bloque ::= INICIO_BLOQUE lista_sentencias FINAL_BLOQUE;
+
+lista_sentencias ::= sentencia lista_sentencias
+                   | sentencia;
+
+sentencia ::= creacion FIN_EXPR
+            | asignacion FIN_EXPR
+            | creacion_array FIN_EXPR
+            | asignacion_array FIN_EXPR
+            | creacion_asignacion FIN_EXPR
+            | creacion_asignacion_array FIN_EXPR
+            | return_nt FIN_EXPR
+            | break_nt FIN_EXPR
+            | llamada_funcion FIN_EXPR
+            | bloque_if_else
+            | bloque_do_while
+            | bloque_switch
+            | expresion FIN_EXPR
+            | cin_nt FIN_EXPR
+            | cout_nt FIN_EXPR;
+
+creacion ::= tipo SEPARADOR ID;
+
+creacion_array ::= tipo_array SEPARADOR ID INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES;
+
+tipo_array ::= INT | FLOAT;
+
+lista_expresiones ::= expresion COMA lista_expresiones
+                    | expresion;
+
+asignacion ::= ID ASIGNAR expresion;
+
+asignacion_array ::= ID INICIO_INDICES expresion FINAL_INDICES INICIO_INDICES expresion FINAL_INDICES ASIGNAR expresion;
+
+acceso_array ::= ID INICIO_INDICES expresion FINAL_INDICES INICIO_INDICES expresion FINAL_INDICES;
+
+creacion_asignacion ::= tipo SEPARADOR ID ASIGNAR expresion;
+
+creacion_asignacion_array ::= tipo_array SEPARADOR ID INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES ASIGNAR valores_array;
+
+valores_array ::= INICIO_BLOQUE lista_valores FINAL_BLOQUE;
+
+lista_valores ::= elemento_valor COMA lista_valores
+                | elemento_valor;
+
+elemento_valor ::= expresion
+                 | valores_array;
+
+llamada_funcion ::= ID INICIO_PAREN lista_expresiones FINAL_PAREN
+                  | ID INICIO_PAREN FINAL_PAREN;
+
+expresion ::= expresion_logica;
+
+expresion_logica ::= primer_termino_or siguientes_terminos_or;
+
+primer_termino_or ::= expresion_conjuncion;
+
+siguientes_terminos_or ::= OR expresion_conjuncion siguientes_terminos_or
+                         | /* epsilon */;
+
+expresion_conjuncion ::= primer_termino_and siguientes_terminos_and;
+
+primer_termino_and ::= expresion_negacion;
+
+siguientes_terminos_and ::= AND expresion_negacion siguientes_terminos_and
+                          | /* epsilon */;
+
+expresion_negacion ::= NOT expresion_negacion
+                    | expresion_relacional;
+
+expresion_relacional ::= expresion_aritmetica
+                       | comparacion;
+
+comparacion ::= equal
+             | n_equal
+             | less_t
+             | less_te
+             | greather_t
+             | greather_te;
+
+equal ::= EQUAL INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+
+n_equal ::= N_EQUAL INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+
+less_t ::= LESS_T INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+
+less_te ::= LESS_TE INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+
+greather_t ::= GREATHER_T INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+
+greather_te ::= GREATHER_TE INICIO_PAREN expresion_aritmetica COMA expresion_aritmetica FINAL_PAREN;
+
+expresion_aritmetica ::= primer_termino_arit siguientes_terminos_arit;
+
+primer_termino_arit ::= expresion_termino;
+
+siguientes_terminos_arit ::= SUMA expresion_termino siguientes_terminos_arit
+                           | RESTA expresion_termino siguientes_terminos_arit
+                           | /* epsilon */;
+
+expresion_termino ::= primer_factor_term siguientes_factores_term;
+
+primer_factor_term ::= expresion_factor;
+
+siguientes_factores_term ::= MULTI expresion_factor siguientes_factores_term
+                           | DIV expresion_factor siguientes_factores_term
+                           | MOD expresion_factor siguientes_factores_term
+                           | /* epsilon */;
+
+expresion_factor ::= primer_potencia siguientes_potencias;
+
+primer_potencia ::= expresion_potencia;
+
+siguientes_potencias ::= POT expresion_potencia siguientes_potencias
+                       | /* epsilon */;
+
+expresion_potencia ::= expresion_unarios;
+
+expresion_unarios ::= MASMAS ID
+                    | MASMAS acceso_array
+                    | MENOSMENOS ID
+                    | MENOSMENOS acceso_array
+                    | RESTA numero
+                    | expresion_valores;
+
+expresion_valores ::= literal
+                    | ID
+                    | acceso_array
+                    | llamada_funcion
+                    | INICIO_PAREN expresion FINAL_PAREN;
+
+condicion ::= expresion_logica;
+
+bloque_if_else ::= IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque
+                 | IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque ELSE SEPARADOR bloque;
+
+bloque_do_while ::= DO SEPARADOR bloque WHILE SEPARADOR INICIO_PAREN condicion FINAL_PAREN FIN_EXPR;
+
+bloque_switch ::= SWITCH SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque_casos;
+
+bloque_casos ::= INICIO_BLOQUE lista_casos FINAL_BLOQUE
+               | INICIO_BLOQUE lista_casos default_case FINAL_BLOQUE;
+
+lista_casos ::= caso lista_casos
+              | caso;
+
+caso ::= CASE literal DOS_PUNTOS lista_sentencias;
+
+default_case ::= DEFAULT SEPARADOR DOS_PUNTOS lista_sentencias;
+
+break_nt ::= BREAK;
+
+return_nt ::= RETURN
+            | RETURN SEPARADOR expresion;
+
+cin_nt ::= CIN INICIO_PAREN ID FINAL_PAREN;
+
+cout_nt ::= COUT INICIO_PAREN literal FINAL_PAREN
+          | COUT INICIO_PAREN ID FINAL_PAREN
+          | COUT INICIO_PAREN expresion FINAL_PAREN;
+
+literal ::= numero
+          | bool_lit
+          | CHAR_LIT
+          | STRING_LITERAL;
+
+numero ::= ENTERO
+         | FLOTANTE
+         | EXPONENCIAL
+         | FRACCION;
+
+bool_lit ::= TRUE
+           | FALSE;
+
+tipo ::= STRING
+       | CHAR
+       | FLOAT
+       | BOOL
+       | INT;
