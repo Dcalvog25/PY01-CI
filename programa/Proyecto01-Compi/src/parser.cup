@@ -16,16 +16,6 @@ parser code {:
         this.manejadorErrores = lex.getManejadorErrores();
     }
 
-    @Override
-    public Symbol scan() throws Exception {
-        Symbol sym = super.scan();
-        if (sym != null) {
-            if (sym.left >= 0) lastLine = sym.left + 1;
-            if (sym.right >= 0) lastColumn = sym.right + 1;
-        }
-        return sym;
-    }
-
     private String nuevoScope(String tipo) {
         String key = tipo + "_" + tabla.getCurrentScope();
         int count = contadores.getOrDefault(key, 0) + 1;
@@ -61,7 +51,16 @@ parser code {:
 :};
 
 init with {: :};
-scan with {: return lex.next_token(); :};
+scan with {:
+    Symbol token = lex.next_token();
+
+    if (token != null) {
+        if (token.left >= 0) lastLine = token.left + 1;
+        if (token.right >= 0) lastColumn = token.right + 1;
+    }
+
+    return token;
+:};
 
 terminal IF, ELSE, DO, WHILE, SWITCH, CASE, DEFAULT, BREAK, RETURN;
 terminal CIN, COUT, EMPTY, MAIN;
@@ -131,7 +130,7 @@ funciones ::= funcion funciones
 
 funcion ::= tipo:t SEPARADOR ID:i INICIO_PAREN lista_parametros FINAL_PAREN
             {:
-                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                 nodo.setCategoria("funcion");
                 tabla.agregarNodo(nodo);
                 tabla.crearNuevoScope(i.toString());
@@ -140,7 +139,7 @@ funcion ::= tipo:t SEPARADOR ID:i INICIO_PAREN lista_parametros FINAL_PAREN
             {: tabla.salirDelScope(); :}
           | tipo:t SEPARADOR ID:i INICIO_PAREN FINAL_PAREN
             {:
-                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                 nodo.setCategoria("funcion");
                 tabla.agregarNodo(nodo);
                 tabla.crearNuevoScope(i.toString());
@@ -153,7 +152,7 @@ lista_parametros ::= parametro COMA lista_parametros
 
 parametro ::= tipo:t SEPARADOR ID:i
               {:
-                  TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                  TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                   nodo.setCategoria("parametro");
                   tabla.agregarNodo(nodo);
 
@@ -162,7 +161,7 @@ parametro ::= tipo:t SEPARADOR ID:i
                       tabla.getParentScope()
                   );
                   if (nodoFuncion != null) {
-                      nodoFuncion.agregarParametro(new TablaSimbolos.Parametro(t, i.toString()));
+                      nodoFuncion.agregarParametro(new TablaSimbolos.Parametro(t.toString(), i.toString()));
                   }
               :};
 
@@ -188,14 +187,14 @@ sentencia ::= creacion FIN_EXPR
 
 creacion ::= tipo:t SEPARADOR ID:i
              {:
-                 TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                 TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                  nodo.setCategoria("variable");
                  tabla.agregarNodo(nodo);
              :};
 
 creacion_array ::= tipo:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES
                    {:
-                       TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                       TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                        nodo.setCategoria("arreglo");
                        tabla.agregarNodo(nodo);
                    :};
@@ -211,14 +210,14 @@ acceso_array ::= ID INICIO_INDICES expresion FINAL_INDICES INICIO_INDICES expres
 
 creacion_asignacion ::= tipo:t SEPARADOR ID:i ASIGNAR expresion
                         {:
-                            TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                            TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                             nodo.setCategoria("variable");
                             tabla.agregarNodo(nodo);
                         :};
 
 creacion_asignacion_array ::= tipo:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES ASIGNAR valores_array
                                {:
-                                   TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                                   TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                                    nodo.setCategoria("arreglo");
                                    tabla.agregarNodo(nodo);
                                :};
@@ -360,9 +359,9 @@ numero ::= ENTERO
 bool_lit ::= TRUE
            | FALSE;
 
-tipo ::= STRING
-       | CHAR
-       | FLOAT
-       | BOOL
-       | INT;
+tipo ::= STRING {: RESULT = "string"; :}
+       | CHAR   {: RESULT = "char"; :}
+       | FLOAT  {: RESULT = "float"; :}
+       | BOOL   {: RESULT = "bool"; :}
+       | INT    {: RESULT = "int"; :};
 

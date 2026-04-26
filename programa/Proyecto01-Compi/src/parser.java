@@ -841,7 +841,16 @@ public class parser extends java_cup.runtime.lr_parser {
   public java_cup.runtime.Symbol scan()
     throws java.lang.Exception
     {
- return lex.next_token(); 
+
+    Symbol token = lex.next_token();
+
+    if (token != null) {
+        if (token.left >= 0) lastLine = token.left + 1;
+        if (token.right >= 0) lastColumn = token.right + 1;
+    }
+
+    return token;
+
     }
 
 
@@ -857,16 +866,6 @@ public class parser extends java_cup.runtime.lr_parser {
         this.lex = lex;
         this.tabla = new TablaSimbolos();
         this.manejadorErrores = lex.getManejadorErrores();
-    }
-
-    @Override
-    public Symbol scan() throws Exception {
-        Symbol sym = super.scan();
-        if (sym != null) {
-            if (sym.left >= 0) lastLine = sym.left + 1;
-            if (sym.right >= 0) lastColumn = sym.right + 1;
-        }
-        return sym;
     }
 
     private String nuevoScope(String tipo) {
@@ -1008,7 +1007,7 @@ class CUP$parser$actions {
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		Object i = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 
-                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                 nodo.setCategoria("funcion");
                 tabla.agregarNodo(nodo);
                 tabla.crearNuevoScope(i.toString());
@@ -1045,7 +1044,7 @@ class CUP$parser$actions {
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		Object i = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
-                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                 nodo.setCategoria("funcion");
                 tabla.agregarNodo(nodo);
                 tabla.crearNuevoScope(i.toString());
@@ -1100,7 +1099,7 @@ class CUP$parser$actions {
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object i = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                  TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                  TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                   nodo.setCategoria("parametro");
                   tabla.agregarNodo(nodo);
 
@@ -1109,7 +1108,7 @@ class CUP$parser$actions {
                       tabla.getParentScope()
                   );
                   if (nodoFuncion != null) {
-                      nodoFuncion.agregarParametro(new TablaSimbolos.Parametro(t, i.toString()));
+                      nodoFuncion.agregarParametro(new TablaSimbolos.Parametro(t.toString(), i.toString()));
                   }
               
               CUP$parser$result = parser.getSymbolFactory().newSymbol("parametro",5, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1280,7 +1279,7 @@ class CUP$parser$actions {
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object i = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                 TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                 TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                  nodo.setCategoria("variable");
                  tabla.agregarNodo(nodo);
              
@@ -1299,7 +1298,7 @@ class CUP$parser$actions {
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
 		Object i = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
 		
-                       TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                       TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                        nodo.setCategoria("arreglo");
                        tabla.agregarNodo(nodo);
                    
@@ -1363,7 +1362,7 @@ class CUP$parser$actions {
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		Object i = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		
-                            TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                            TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                             nodo.setCategoria("variable");
                             tabla.agregarNodo(nodo);
                         
@@ -1382,7 +1381,7 @@ class CUP$parser$actions {
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-8)).right;
 		Object i = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-8)).value;
 		
-                                   TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
+                                   TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
                                    nodo.setCategoria("arreglo");
                                    tabla.agregarNodo(nodo);
                                
@@ -2185,7 +2184,7 @@ class CUP$parser$actions {
           case 127: // tipo ::= STRING 
             {
               Object RESULT =null;
-
+		 RESULT = "string"; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("tipo",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2194,7 +2193,7 @@ class CUP$parser$actions {
           case 128: // tipo ::= CHAR 
             {
               Object RESULT =null;
-
+		 RESULT = "char"; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("tipo",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2203,7 +2202,7 @@ class CUP$parser$actions {
           case 129: // tipo ::= FLOAT 
             {
               Object RESULT =null;
-
+		 RESULT = "float"; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("tipo",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2212,7 +2211,7 @@ class CUP$parser$actions {
           case 130: // tipo ::= BOOL 
             {
               Object RESULT =null;
-
+		 RESULT = "bool"; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("tipo",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2221,7 +2220,7 @@ class CUP$parser$actions {
           case 131: // tipo ::= INT 
             {
               Object RESULT =null;
-
+		 RESULT = "int"; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("tipo",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
