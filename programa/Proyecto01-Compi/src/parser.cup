@@ -87,7 +87,7 @@ non terminal lista_parametros, parametro;
 non terminal bloque, lista_sentencias, sentencia;
 non terminal llamada_funcion, lista_expresiones;
 
-non terminal tipo, tipo_array;
+non terminal tipo;
 non terminal creacion, creacion_array;
 non terminal asignacion, asignacion_array, acceso_array;
 non terminal creacion_asignacion, creacion_asignacion_array;
@@ -179,7 +179,6 @@ sentencia ::= creacion FIN_EXPR
             | creacion_asignacion_array FIN_EXPR
             | return_nt FIN_EXPR
             | break_nt FIN_EXPR
-            | llamada_funcion FIN_EXPR
             | bloque_if_else
             | bloque_do_while
             | bloque_switch
@@ -194,15 +193,12 @@ creacion ::= tipo:t SEPARADOR ID:i
                  tabla.agregarNodo(nodo);
              :};
 
-creacion_array ::= tipo_array:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES
+creacion_array ::= tipo:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES
                    {:
                        TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
                        nodo.setCategoria("arreglo");
                        tabla.agregarNodo(nodo);
                    :};
-
-tipo_array ::= INT
-             | FLOAT;
 
 lista_expresiones ::= expresion COMA lista_expresiones
                     | expresion;
@@ -220,7 +216,7 @@ creacion_asignacion ::= tipo:t SEPARADOR ID:i ASIGNAR expresion
                             tabla.agregarNodo(nodo);
                         :};
 
-creacion_asignacion_array ::= tipo_array:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES ASIGNAR valores_array
+creacion_asignacion_array ::= tipo:t SEPARADOR ID:i INICIO_INDICES ENTERO FINAL_INDICES INICIO_INDICES ENTERO FINAL_INDICES ASIGNAR valores_array
                                {:
                                    TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t, i.toString(), lastLine, lastColumn);
                                    nodo.setCategoria("arreglo");
@@ -315,23 +311,8 @@ expresion_valores ::= literal
 
 condicion ::= expresion_logica;
 
-bloque_if_else ::= IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN
-                   {:
-                       tabla.crearNuevoScope(nuevoScope("if"));
-                   :}
-                   bloque
-                   {: tabla.salirDelScope(); :}
-                 | IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN
-                   {:
-                       tabla.crearNuevoScope(nuevoScope("if"));
-                   :}
-                   bloque
-                   {:
-                       tabla.salirDelScope();
-                       tabla.crearNuevoScope(nuevoScope("else"));
-                   :}
-                   ELSE SEPARADOR bloque
-                   {: tabla.salirDelScope(); :};
+bloque_if_else ::= IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque
+                 | IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque ELSE SEPARADOR bloque;
 
 bloque_do_while ::= DO SEPARADOR
                     {:
@@ -364,9 +345,7 @@ return_nt ::= RETURN
 
 cin_nt ::= CIN INICIO_PAREN ID FINAL_PAREN;
 
-cout_nt ::= COUT INICIO_PAREN literal FINAL_PAREN
-          | COUT INICIO_PAREN ID FINAL_PAREN
-          | COUT INICIO_PAREN expresion FINAL_PAREN;
+cout_nt ::= COUT INICIO_PAREN expresion FINAL_PAREN;
 
 literal ::= numero
           | bool_lit
