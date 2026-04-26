@@ -4,6 +4,7 @@ import java.util.HashMap;
 parser code {:
     Lexer lex;
     TablaSimbolos tabla;
+    ManejadorErrores manejadorErrores;
     HashMap<String, Integer> contadores = new HashMap<>();
 
     private int lastLine = 1;
@@ -12,6 +13,7 @@ parser code {:
     public parser(Lexer lex) {
         this.lex = lex;
         this.tabla = new TablaSimbolos();
+        this.manejadorErrores = lex.getManejadorErrores();
     }
 
     @Override
@@ -29,6 +31,32 @@ parser code {:
         int count = contadores.getOrDefault(key, 0) + 1;
         contadores.put(key, count);
         return tipo + count + "_" + tabla.getCurrentScope();
+    }
+
+    public void syntax_error(Symbol token) {
+        String msj = "Token inesperado: " + token.value;
+
+        if (manejadorErrores != null) {
+            manejadorErrores.agregarErrorSintactico(
+                msj,
+                token.left,
+                token.right
+            );
+        } else {
+            System.err.println("ERROR SINTÁCTICO: " + msj);
+        }
+    }
+
+    public void unrecovered_syntax_error(Symbol token) throws Exception {
+        String msj = "Error sintáctico no recuperable";
+
+        if (manejadorErrores != null) {
+            manejadorErrores.agregarErrorSintactico(
+                msj,
+                token.left,
+                token.right
+            );
+        }
     }
 :};
 
