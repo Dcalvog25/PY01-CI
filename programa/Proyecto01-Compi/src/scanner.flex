@@ -39,6 +39,10 @@ import java.io.*;
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline, yycolumn, value);
     }
+
+    public ManejadorErrores getManejadorErrores() {
+        return manejadorErrores;
+    }
 %}
 
 letra        = [a-zA-Z_]
