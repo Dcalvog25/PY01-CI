@@ -1,36 +1,29 @@
+import java.io.File;
 import java.io.FileReader;
 import java.util.Scanner;
-import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
+        Lexer lexer = null;
+        parser p = null;
 
         try {
             System.out.print("Ingrese el nombre del archivo: ");
             String nombreArchivo = input.nextLine();
 
-            // Validar si el archivo existe
             File archivo = new File(nombreArchivo);
+
             if (!archivo.exists()) {
                 System.err.println("El archivo no existe.");
                 return;
             }
 
-            // Crear lexer
-            FileReader reader = new FileReader(archivo);
-            Lexer lexer = new Lexer(reader);
+            lexer = new Lexer(new FileReader(archivo));
+            p = new parser(lexer);
 
-            // Crear parser
-            parser p = new parser(lexer);
-
-            // Ejecutar análisis
             p.parse();
 
-            // Cerrar manejador de errores
-            lexer.cerrar();
-
-            // Resultado final
             if (lexer.getManejadorErrores().hayErrores()) {
                 System.out.println("Análisis finalizado con errores.");
             } else {
@@ -38,9 +31,16 @@ public class Main {
             }
 
         } catch (Exception e) {
-            System.err.println("Error general: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Análisis finalizado con errores.");
         } finally {
+            if (p != null) {
+                p.getTabla().escribirArchivo();
+            }
+
+            if (lexer != null) {
+                lexer.cerrar();
+            }
+
             input.close();
         }
     }
