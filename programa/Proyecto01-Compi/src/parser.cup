@@ -16,6 +16,10 @@ parser code {:
         this.manejadorErrores = lex.getManejadorErrores();
     }
 
+    public TablaSimbolos getTabla() {
+        return tabla;
+    }
+
     private String nuevoScope(String tipo) {
         String key = tipo + "_" + tabla.getCurrentScope();
         int count = contadores.getOrDefault(key, 0) + 1;
@@ -24,13 +28,21 @@ parser code {:
     }
 
     public void syntax_error(Symbol token) {
-        String msj = "Token inesperado: " + token.value;
+        String msj;
+
+        if (token == null || token.sym == sym.EOF) {
+            msj = "Fin de archivo inesperado";
+        } else if (token.value != null) {
+            msj = "Token inesperado: " + token.value;
+        } else {
+            msj = "Token inesperado: " + sym.terminalNames[token.sym];
+        }
 
         if (manejadorErrores != null) {
             manejadorErrores.agregarErrorSintactico(
                 msj,
-                token.left,
-                token.right
+                (token != null ? token.left : lastLine - 1),
+                (token != null ? token.right : lastColumn - 1)
             );
         } else {
             System.err.println("ERROR SINTÁCTICO: " + msj);
@@ -81,7 +93,7 @@ terminal SUMA, RESTA, MULTI, DIV, MOD, POT;
 terminal OR, AND, NOT;
 terminal SEPARADOR, FIN_EXPR, COMA, DOS_PUNTOS;
 
-non terminal programa, main, funciones, funcion;
+non terminal programa, main, funciones, encabezado_funcion, funcion;
 non terminal lista_parametros, parametro;
 non terminal bloque, lista_sentencias, sentencia;
 non terminal llamada_funcion, lista_expresiones;
@@ -128,42 +140,42 @@ main ::= EMPTY SEPARADOR MAIN INICIO_PAREN FINAL_PAREN
 funciones ::= funcion funciones
             | funcion;
 
-funcion ::= tipo:t SEPARADOR ID:i INICIO_PAREN lista_parametros FINAL_PAREN
-            {:
-                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
-                nodo.setCategoria("funcion");
-                tabla.agregarNodo(nodo);
-                tabla.crearNuevoScope(i.toString());
-            :}
-            bloque
+encabezado_funcion ::= tipo:t SEPARADOR ID:i
+                       {:
+                           TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(
+                               t.toString(),
+                               i.toString(),
+                               ileft + 1,
+                               iright + 1
+                           );
+                           nodo.setCategoria("funcion");
+                           tabla.agregarNodo(nodo);
+
+                           tabla.crearNuevoScope(i.toString());
+                       :}
+                     ;
+
+funcion ::= encabezado_funcion INICIO_PAREN lista_parametros FINAL_PAREN bloque
             {: tabla.salirDelScope(); :}
-          | tipo:t SEPARADOR ID:i INICIO_PAREN FINAL_PAREN
-            {:
-                TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
-                nodo.setCategoria("funcion");
-                tabla.agregarNodo(nodo);
-                tabla.crearNuevoScope(i.toString());
-            :}
-            bloque
-            {: tabla.salirDelScope(); :};
+          | encabezado_funcion INICIO_PAREN FINAL_PAREN bloque
+            {: tabla.salirDelScope(); :}
+          ;
 
 lista_parametros ::= parametro COMA lista_parametros
                    | parametro;
 
 parametro ::= tipo:t SEPARADOR ID:i
               {:
-                  TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(t.toString(), i.toString(), lastLine, lastColumn);
+                  TablaSimbolos.NodoToken nodo = new TablaSimbolos.NodoToken(
+                      t.toString(),
+                      i.toString(),
+                      ileft + 1,
+                      iright + 1
+                  );
                   nodo.setCategoria("parametro");
                   tabla.agregarNodo(nodo);
-
-                  TablaSimbolos.NodoToken nodoFuncion = tabla.buscarSimboloEnScope(
-                      tabla.getCurrentScope(),
-                      tabla.getParentScope()
-                  );
-                  if (nodoFuncion != null) {
-                      nodoFuncion.agregarParametro(new TablaSimbolos.Parametro(t.toString(), i.toString()));
-                  }
-              :};
+              :}
+            ;
 
 bloque ::= INICIO_BLOQUE lista_sentencias FINAL_BLOQUE;
 
@@ -183,7 +195,17 @@ sentencia ::= creacion FIN_EXPR
             | bloque_switch
             | expresion FIN_EXPR
             | cin_nt FIN_EXPR
-            | cout_nt FIN_EXPR;
+            | cout_nt FIN_EXPR
+            | error FIN_EXPR
+              {:
+                  if (manejadorErrores != null) {
+                      manejadorErrores.agregarErrorSintactico(
+                          "Sentencia inválida, se recuperó en FIN_EXPR",
+                          lastLine - 1,
+                          lastColumn - 1
+                      );
+                  }
+              :};
 
 creacion ::= tipo:t SEPARADOR ID:i
              {:
