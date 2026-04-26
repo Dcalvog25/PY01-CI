@@ -118,6 +118,7 @@ non terminal primer_potencia, siguientes_potencias;
 
 non terminal comparacion, equal, n_equal, less_t, less_te, greather_t, greather_te;
 non terminal condicion;
+non terminal abrir_scope_if, abrir_scope_else, cerrar_scope;
 non terminal bloque_if_else, bloque_do_while, bloque_switch;
 non terminal bloque_casos, lista_casos, caso, default_case;
 
@@ -330,10 +331,40 @@ expresion_valores ::= literal
                     | llamada_funcion
                     | INICIO_PAREN expresion FINAL_PAREN;
 
+abrir_scope_if ::=
+    {:
+        tabla.crearNuevoScope(nuevoScope("if"));
+    :}
+;
+
+abrir_scope_else ::=
+    {:
+        tabla.crearNuevoScope(nuevoScope("else"));
+    :}
+;
+
+cerrar_scope ::=
+    {:
+        tabla.salirDelScope();
+    :}
+;
+
 condicion ::= expresion_logica;
 
-bloque_if_else ::= IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque
-                 | IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN bloque ELSE SEPARADOR bloque;
+bloque_if_else ::= IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN
+                   abrir_scope_if
+                   bloque
+                   cerrar_scope
+
+                 | IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN
+                   abrir_scope_if
+                   bloque
+                   cerrar_scope
+                   ELSE SEPARADOR
+                   abrir_scope_else
+                   bloque
+                   cerrar_scope
+                 ;
 
 bloque_do_while ::= DO SEPARADOR
                     {:
