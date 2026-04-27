@@ -50,7 +50,11 @@ parser code {:
     }
 
     public void unrecovered_syntax_error(Symbol token) throws Exception {
-        String msj = "Error sintáctico no recuperable";
+        if (token == null || token.sym == sym.EOF) {
+            return;
+        }
+
+        String msj = "Error sintáctico no recuperable: token inesperado";
 
         if (manejadorErrores != null) {
             manejadorErrores.agregarErrorSintactico(
@@ -95,7 +99,6 @@ terminal SEPARADOR, FIN_EXPR, COMA, DOS_PUNTOS;
 
 non terminal programa, main, funciones, encabezado_funcion, funcion;
 non terminal lista_parametros, parametro;
-non terminal elementos_programa, elemento_programa;
 non terminal bloque, lista_sentencias, sentencia;
 non terminal llamada_funcion, lista_expresiones;
 
@@ -130,13 +133,9 @@ non terminal literal, numero, bool_lit;
 
 start with programa;
 
-programa ::= funcion
+programa ::= funciones main
              {: tabla.escribirArchivo(); :}
            | main
-             {: tabla.escribirArchivo(); :}
-           | error main
-             {: tabla.escribirArchivo(); :}
-           | funciones error main
              {: tabla.escribirArchivo(); :}
            ;
 
@@ -169,10 +168,10 @@ funcion ::= encabezado_funcion INICIO_PAREN lista_parametros FINAL_PAREN bloque
           | encabezado_funcion INICIO_PAREN FINAL_PAREN bloque
             {: tabla.salirDelScope(); :}
 
-          | encabezado_funcion INICIO_PAREN error FINAL_PAREN bloque
+          | encabezado_funcion INICIO_PAREN lista_parametros FINAL_PAREN error FINAL_BLOQUE
             {: tabla.salirDelScope(); :}
 
-          | encabezado_funcion INICIO_PAREN lista_parametros FINAL_PAREN error FINAL_BLOQUE
+          | encabezado_funcion INICIO_PAREN FINAL_PAREN error FINAL_BLOQUE
             {: tabla.salirDelScope(); :}
           ;
 

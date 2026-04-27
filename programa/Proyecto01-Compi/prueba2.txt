@@ -1,14 +1,14 @@
-int~sumar<|int~a,int~b|>
+int~suma<|int~a,int~b|>
 |:
 int~resultado!
 resultado<-a+!
-float~temporal!
+float~temp!
 return~resultado!
 :|
 
 bool~comparar<|int~x,int~y|>
 |:
-if~<|equal<|x,y|>
+if~<|equal<|x,y|>|>
 |:
 bool~bandera!
 bandera<-!
@@ -24,10 +24,10 @@ empty~__main__<||>
 |:
 int~num1<-10!
 int~num2<-!
-float~promedio!
+float~prom!
 cout<|num1|>!
 bool~ok<-true!
-char~letra<-@!
 int~final!
+final<-num1 AND !
 return!
 :|
