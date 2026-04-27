@@ -358,7 +358,7 @@ espacio          = {LineTerminator} | [ \t\f]
         if (manejadorErrores != null) {
             manejadorErrores.agregarErrorLexico(errorMsg, yyline, yycolumn);
         } else {
-            System.err.println("ERROR LÉXICO [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
+            System.err.println("Error Léxico [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
         }
     }
 }
@@ -388,7 +388,7 @@ espacio          = {LineTerminator} | [ \t\f]
         if (manejadorErrores != null) {
             manejadorErrores.agregarErrorLexico(errorMsg, yyline, yycolumn);
         } else {
-            System.err.println("ERROR LÉXICO [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
+            System.err.println("Error Léxico [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
         }
         yybegin(YYINITIAL); 
     }

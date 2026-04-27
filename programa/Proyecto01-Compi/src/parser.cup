@@ -45,7 +45,7 @@ parser code {:
                 (token != null ? token.right : lastColumn - 1)
             );
         } else {
-            System.err.println("ERROR SINTÁCTICO: " + msj);
+            System.err.println("Error Sintáctico: " + msj);
         }
     }
 
@@ -95,6 +95,7 @@ terminal SEPARADOR, FIN_EXPR, COMA, DOS_PUNTOS;
 
 non terminal programa, main, funciones, encabezado_funcion, funcion;
 non terminal lista_parametros, parametro;
+non terminal elementos_programa, elemento_programa;
 non terminal bloque, lista_sentencias, sentencia;
 non terminal llamada_funcion, lista_expresiones;
 
@@ -119,6 +120,7 @@ non terminal primer_potencia, siguientes_potencias;
 non terminal comparacion, equal, n_equal, less_t, less_te, greather_t, greather_te;
 non terminal condicion;
 non terminal abrir_scope_if, abrir_scope_else, cerrar_scope;
+non terminal abrir_scope_while, abrir_scope_switch;
 non terminal bloque_if_else, bloque_do_while, bloque_switch;
 non terminal bloque_casos, lista_casos, caso, default_case;
 
@@ -128,10 +130,15 @@ non terminal literal, numero, bool_lit;
 
 start with programa;
 
-programa ::= funciones main
+programa ::= funcion
              {: tabla.escribirArchivo(); :}
            | main
-             {: tabla.escribirArchivo(); :};
+             {: tabla.escribirArchivo(); :}
+           | error main
+             {: tabla.escribirArchivo(); :}
+           | funciones error main
+             {: tabla.escribirArchivo(); :}
+           ;
 
 main ::= EMPTY SEPARADOR MAIN INICIO_PAREN FINAL_PAREN
          {: tabla.crearNuevoScope("main"); :}
@@ -158,7 +165,14 @@ encabezado_funcion ::= tipo:t SEPARADOR ID:i
 
 funcion ::= encabezado_funcion INICIO_PAREN lista_parametros FINAL_PAREN bloque
             {: tabla.salirDelScope(); :}
+
           | encabezado_funcion INICIO_PAREN FINAL_PAREN bloque
+            {: tabla.salirDelScope(); :}
+
+          | encabezado_funcion INICIO_PAREN error FINAL_PAREN bloque
+            {: tabla.salirDelScope(); :}
+
+          | encabezado_funcion INICIO_PAREN lista_parametros FINAL_PAREN error FINAL_BLOQUE
             {: tabla.salirDelScope(); :}
           ;
 
@@ -178,10 +192,16 @@ parametro ::= tipo:t SEPARADOR ID:i
               :}
             ;
 
-bloque ::= INICIO_BLOQUE lista_sentencias FINAL_BLOQUE;
+bloque ::= INICIO_BLOQUE lista_sentencias FINAL_BLOQUE
+         | INICIO_BLOQUE FINAL_BLOQUE
+         | INICIO_BLOQUE error FINAL_BLOQUE
+         ;
 
 lista_sentencias ::= sentencia lista_sentencias
-                   | sentencia;
+                   | sentencia
+                   | error FIN_EXPR lista_sentencias
+                   | error FIN_EXPR
+                   ;
 
 sentencia ::= creacion FIN_EXPR
             | asignacion FIN_EXPR
@@ -197,16 +217,7 @@ sentencia ::= creacion FIN_EXPR
             | expresion FIN_EXPR
             | cin_nt FIN_EXPR
             | cout_nt FIN_EXPR
-            | error FIN_EXPR
-              {:
-                  if (manejadorErrores != null) {
-                      manejadorErrores.agregarErrorSintactico(
-                          "Sentencia inválida, se recuperó en FIN_EXPR",
-                          lastLine - 1,
-                          lastColumn - 1
-                      );
-                  }
-              :};
+            ;
 
 creacion ::= tipo:t SEPARADOR ID:i
              {:
@@ -364,21 +375,44 @@ bloque_if_else ::= IF SEPARADOR INICIO_PAREN condicion FINAL_PAREN
                    abrir_scope_else
                    bloque
                    cerrar_scope
+
+                 | IF SEPARADOR INICIO_PAREN error FINAL_PAREN
+                   abrir_scope_if
+                   bloque
+                   cerrar_scope
                  ;
 
-bloque_do_while ::= DO SEPARADOR
-                    {:
-                        tabla.crearNuevoScope(nuevoScope("while"));
-                    :}
+abrir_scope_while ::=
+    {:
+        tabla.crearNuevoScope(nuevoScope("while"));
+    :}
+;
+
+bloque_do_while ::= DO SEPARADOR abrir_scope_while
                     bloque WHILE SEPARADOR INICIO_PAREN condicion FINAL_PAREN FIN_EXPR
-                    {: tabla.salirDelScope(); :};
+                    {: tabla.salirDelScope(); :}
+
+                  | DO SEPARADOR abrir_scope_while
+                    bloque WHILE SEPARADOR INICIO_PAREN error FINAL_PAREN FIN_EXPR
+                    {: tabla.salirDelScope(); :}
+                  ;
+
+abrir_scope_switch ::=
+    {:
+        tabla.crearNuevoScope(nuevoScope("switch"));
+    :}
+;
 
 bloque_switch ::= SWITCH SEPARADOR INICIO_PAREN condicion FINAL_PAREN
-                  {:
-                      tabla.crearNuevoScope(nuevoScope("switch"));
-                  :}
+                  abrir_scope_switch
                   bloque_casos
-                  {: tabla.salirDelScope(); :};
+                  {: tabla.salirDelScope(); :}
+
+                | SWITCH SEPARADOR INICIO_PAREN error FINAL_PAREN
+                  abrir_scope_switch
+                  bloque_casos
+                  {: tabla.salirDelScope(); :}
+                ;
 
 bloque_casos ::= INICIO_BLOQUE lista_casos FINAL_BLOQUE
                | INICIO_BLOQUE lista_casos default_case FINAL_BLOQUE;
@@ -386,9 +420,15 @@ bloque_casos ::= INICIO_BLOQUE lista_casos FINAL_BLOQUE
 lista_casos ::= caso lista_casos
               | caso;
 
-caso ::= CASE literal DOS_PUNTOS lista_sentencias;
+caso ::= CASE literal DOS_PUNTOS lista_sentencias
+       | CASE SEPARADOR literal DOS_PUNTOS lista_sentencias
+       | CASE error DOS_PUNTOS lista_sentencias
+       ;
 
-default_case ::= DEFAULT SEPARADOR DOS_PUNTOS lista_sentencias;
+default_case ::= DEFAULT SEPARADOR DOS_PUNTOS lista_sentencias
+               | DEFAULT DOS_PUNTOS lista_sentencias
+               | DEFAULT error lista_sentencias
+               ;
 
 break_nt ::= BREAK;
 

@@ -1051,7 +1051,7 @@ public class parser extends java_cup.runtime.lr_parser {
                 (token != null ? token.right : lastColumn - 1)
             );
         } else {
-            System.err.println("Error Sintáctico: " + msj);
+            System.err.println("ERROR SINTÁCTICO: " + msj);
         }
     }
 
