@@ -222,85 +222,116 @@ public class TablaSimbolos {
 
     public void escribirArchivo(String nombreArchivo) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(nombreArchivo))) {
-            writer.println("=====================================");
-            writer.println("        TABLA DE SÍMBOLOS");
-            writer.println("=====================================\n");
 
             List<String> scopes = new ArrayList<>(tablaSimbolos.keySet());
             scopes.sort(Comparator.naturalOrder());
 
+            writer.println("================================================================================================================");
+            writer.println("                                                TABLA DE SÍMBOLOS");
+            writer.println("================================================================================================================");
+            writer.println("Total de scopes: " + scopes.size());
+            writer.println();
+
             for (String scope : scopes) {
-                ArrayList<NodoToken> nodos = tablaSimbolos.get(scope);
-                
-                writer.println("------- SCOPE: " + scope + " -------");
+                ArrayList<NodoToken> nodos = tablaSimbolos.getOrDefault(scope, new ArrayList<>());
+
+                writer.println("----------------------------------------------------------------------------------------------------------------");
+                writer.println("SCOPE: " + scope);
                 writer.println("Total de símbolos: " + nodos.size());
-                writer.println();
+                writer.println("----------------------------------------------------------------------------------------------------------------");
 
                 if (nodos.isEmpty()) {
-                    writer.println("  (vacío)");
+                    writer.println("  (sin símbolos registrados)");
                 } else {
-                    writer.println(String.format("%-20s %-15s %-20s %-10s %-10s %-15s %s", 
-                            "ID", "Tipo", "Categoría", "Línea", "Columna", "Valor", "Parámetros"));
-                    writer.println("-".repeat(120));
+                    writer.println(String.format(
+                            "%-22s %-12s %-15s %-8s %-8s %-15s %s",
+                            "Id", "Tipo", "Categoría", "Línea", "Columna", "Valor", "Parámetros"
+                    ));
+                    writer.println("-".repeat(112));
 
                     for (NodoToken nodo : nodos) {
-                        String parametrosStr = "";
-                        if (!nodo.getParametros().isEmpty()) {
-                            parametrosStr = nodo.getParametros().toString();
-                        }
+                        String parametrosStr = nodo.getParametros().isEmpty()
+                                ? "-"
+                                : nodo.getParametros().toString();
 
-                        writer.println(String.format("%-20s %-15s %-20s %-10d %-10d %-15s %s", 
+                        writer.println(String.format(
+                                "%-22s %-12s %-15s %-8d %-8d %-15s %s",
                                 nodo.getId(),
                                 nodo.getTipo(),
                                 nodo.getCategoria(),
                                 nodo.getLinea(),
                                 nodo.getColumna(),
                                 nodo.getValor() != null ? nodo.getValor() : "-",
-                                parametrosStr));
+                                parametrosStr
+                        ));
                     }
                 }
 
                 writer.println();
             }
 
-            writer.println("=====================================");
-            writer.println("Total de scopes: " + scopes.size());
-            writer.println("=====================================");
+            writer.println("================================================================================================================");
+            writer.println("Fin de la tabla de símbolos");
+            writer.println("================================================================================================================");
 
         } catch (IOException e) {
-            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+            System.err.println("Error al escribir la tabla de símbolos en el archivo: " + e.getMessage());
         }
     }
 
     public void imprimir() {
-        System.out.println("\n=====================================");
-        System.out.println("        TABLA DE SÍMBOLOS");
-        System.out.println("=====================================\n");
-
         List<String> scopes = new ArrayList<>(tablaSimbolos.keySet());
         scopes.sort(Comparator.naturalOrder());
 
+        System.out.println();
+        System.out.println("================================================================================================================");
+        System.out.println("                                                TABLA DE SÍMBOLOS");
+        System.out.println("================================================================================================================");
+        System.out.println("Total de scopes: " + scopes.size());
+        System.out.println("Scope actual    : " + currentHash);
+        System.out.println();
+
         for (String scope : scopes) {
-            ArrayList<NodoToken> nodos = tablaSimbolos.get(scope);
-            
-            System.out.println("------- SCOPE: " + scope + " -------");
+            ArrayList<NodoToken> nodos = tablaSimbolos.getOrDefault(scope, new ArrayList<>());
+
+            System.out.println("----------------------------------------------------------------------------------------------------------------");
+            System.out.println("SCOPE: " + scope);
             System.out.println("Total de símbolos: " + nodos.size());
-            System.out.println();
+            System.out.println("----------------------------------------------------------------------------------------------------------------");
 
             if (nodos.isEmpty()) {
-                System.out.println("  (vacío)");
+                System.out.println("  (sin símbolos registrados)");
             } else {
+                System.out.println(String.format(
+                        "%-22s %-12s %-15s %-8s %-8s %-15s %s",
+                        "Id", "Tipo", "Categoría", "Línea", "Columna", "Valor", "Parámetros"
+                ));
+                System.out.println("-".repeat(120));
+
                 for (NodoToken nodo : nodos) {
-                    System.out.println("  " + nodo);
+                    String parametrosStr = nodo.getParametros().isEmpty()
+                            ? "-"
+                            : nodo.getParametros().toString();
+
+                    System.out.println(String.format(
+                            "%-22s %-12s %-15s %-8d %-8d %-15s %s",
+                            nodo.getId(),
+                            nodo.getTipo(),
+                            nodo.getCategoria(),
+                            nodo.getLinea(),
+                            nodo.getColumna(),
+                            nodo.getValor() != null ? nodo.getValor() : "-",
+                            parametrosStr
+                    ));
                 }
             }
 
             System.out.println();
         }
 
-        System.out.println("=====================================");
-        System.out.println("Total de scopes: " + scopes.size());
-        System.out.println("Scope actual: " + currentHash);
-        System.out.println("=====================================\n");
+        System.out.println("================================================================================================================");
+        System.out.println("Fin de la tabla de símbolos");
+        System.out.println("================================================================================================================");
+        System.out.println();
     }
 }

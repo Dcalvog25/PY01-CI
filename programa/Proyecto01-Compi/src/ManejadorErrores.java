@@ -8,39 +8,53 @@ public class ManejadorErrores {
     public ManejadorErrores() throws Exception {
         this.errores = new ArrayList<>();
         this.errorWriter = new PrintWriter(new FileWriter("errores.txt"));
-        this.errorWriter.println("=== REPORTE DE ERRORES ===");
-        this.errorWriter.println("Tipo\t\tLínea\tColumna\tMensaje");
-        this.errorWriter.println("----------------------------------------");
+        errorWriter.println("======================================================");
+        errorWriter.println("                REPORTE DE ERRORES");
+        errorWriter.println("======================================================");
+        errorWriter.println(String.format("%-12s %-8s %-8s %s",
+                "Tipo", "Línea", "Columna", "Mensaje"));
+        errorWriter.println("------------------------------------------------------");
     }
     
     public void agregarErrorLexico(String mensaje, int linea, int columna) {
-        String error = String.format("LÉXICO\t\t%d\t%d\t%s", 
-            linea + 1, columna + 1, mensaje);
-        errores.add(error);
-        errorWriter.println(error);
-        errorWriter.flush();
-        System.err.println("ERROR LÉXICO [Línea " + (linea + 1) + ", Columna " + (columna + 1) + "]: " + mensaje);
+        registrarError("Léxico", mensaje, linea, columna);
     }
-    
+
     public void agregarErrorSintactico(String mensaje, int linea, int columna) {
-        String error = String.format("SINTÁCTICO\t%d\t%d\t%s", 
-            linea + 1, columna + 1, mensaje);
+        registrarError("Sintáctico", mensaje, linea, columna);
+    }
+
+    private void registrarError(String tipo, String mensaje, int linea, int columna) {
+        int l = linea + 1;
+        int c = columna + 1;
+
+        String error = String.format("%-12s %-8d %-8d %s", tipo, l, c, mensaje);
         errores.add(error);
         errorWriter.println(error);
         errorWriter.flush();
-        System.err.println("ERROR SINTÁCTICO [Línea " + (linea + 1) + ", Columna " + (columna + 1) + "]: " + mensaje);
+
+        imprimirEnConsola(tipo, mensaje, l, c);
     }
-    
+
+    private void imprimirEnConsola(String tipo, String mensaje, int linea, int columna) {
+        System.err.println("Error " + tipo);
+        System.err.println("  Línea   : " + linea);
+        System.err.println("  Columna : " + columna);
+        System.err.println("  Mensaje : " + mensaje);
+        System.err.println();
+    }
+
     public void cerrar() {
-        errorWriter.println("----------------------------------------");
-        errorWriter.println("Total de errores: " + errores.size());
-        if (errorWriter != null) errorWriter.close();
+        errorWriter.println("------------------------------------------------------");
+        errorWriter.println("Total de Errores: " + errores.size());
+        errorWriter.println("======================================================");
+        errorWriter.close();
     }
-    
+
     public boolean hayErrores() {
         return !errores.isEmpty();
     }
-    
+
     public int getTotalErrores() {
         return errores.size();
     }

@@ -15,7 +15,7 @@ public class Main {
             File archivo = new File(nombreArchivo);
 
             if (!archivo.exists()) {
-                System.err.println("El archivo no existe.");
+                System.err.println("El archivo no existe");
                 return;
             }
 
@@ -25,13 +25,13 @@ public class Main {
             p.parse();
 
             if (lexer.getManejadorErrores().hayErrores()) {
-                System.out.println("Análisis finalizado con errores.");
+                System.out.println("Análisis finalizado con errores");
             } else {
-                System.out.println("Compilación exitosa.");
+                System.out.println("Compilación exitosa");
             }
 
         } catch (Exception e) {
-            System.err.println("Análisis finalizado con errores.");
+            System.err.println("Análisis finalizado con errores");
         } finally {
             if (p != null) {
                 p.getTabla().escribirArchivo();
