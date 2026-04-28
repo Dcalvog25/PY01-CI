@@ -153,14 +153,6 @@ public class TablaSimbolos {
             scope = new ArrayList<>();
             tablaSimbolos.put(currentHash, scope);
         }
-
-        for (NodoToken nodoExistente : scope) {
-            if (nodoExistente.getId().equals(nodo.getId())) {
-                System.err.println("ERROR: Símbolo '" + nodo.getId() + "' ya existe en scope '" + currentHash + "'");
-                return false;
-            }
-        }
-
         scope.add(nodo);
         return true;
     }
