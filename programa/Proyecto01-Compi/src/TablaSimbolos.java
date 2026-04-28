@@ -1,8 +1,44 @@
 import java.util.*;
 import java.io.*;
 
+/*
+ * =========================================================
+ *  CLASE: TablaSimbolos
+ * =========================================================
+ *
+ * Objetivo:
+ * Gestionar todos los identificadores del programa (variables,
+ * funciones, parámetros y arreglos) organizados por scopes.
+ *
+ * Entradas:
+ * - Información proveniente del parser (tipo, nombre, línea, etc.)
+ *
+ * Salidas:
+ * - Estructura interna de símbolos por scope
+ * - Archivo tabla_simbolos.txt con el reporte final
+ * - Impresión en consola opcional
+ *
+ * Restricciones:
+ * - No valida duplicados 
+ * - Depende de que el parser maneje correctamente los scopes
+ */
 public class TablaSimbolos {
 
+    /*
+     * =========================================================
+     *  CLASE INTERNA: Parametro
+     * =========================================================
+     *
+     * Objetivo:
+     * Representar los parámetros de una función.
+     *
+     * Entradas:
+     * - tipo del parámetro
+     * - nombre del parámetro
+     *
+     * Salidas:
+     * - Objeto que describe un parámetro
+     */
     public static class Parametro {
         private String tipo;
         private String nombre;
@@ -33,6 +69,25 @@ public class TablaSimbolos {
         }
     }
 
+    /*
+     * =========================================================
+     *  CLASE INTERNA: NodoToken
+     * =========================================================
+     *
+     * Objetivo:
+     * Representar un símbolo dentro de la tabla (variable, función, etc.)
+     *
+     * Entradas:
+     * - tipo (int, float, etc.)
+     * - identificador
+     * - línea y columna
+     *
+     * Salidas:
+     * - Objeto que contiene toda la información del símbolo
+     *
+     * Restricciones:
+     * - El valor puede ser null si no aplica
+     */
     public static class NodoToken {
         private String tipo;
         private String id;
@@ -118,11 +173,31 @@ public class TablaSimbolos {
         }
     }
 
+    /*
+     * =========================================================
+     *  ATRIBUTOS PRINCIPALES
+     * =========================================================
+     *
+     * tablaSimbolos:
+     * Mapa donde cada clave es un scope y su valor es la lista de símbolos.
+     *
+     * currentHash:
+     * Scope actual donde se están agregando símbolos.
+     *
+     * scopeStack:
+     * Pila para manejar scopes anidados.
+     */
     private HashMap<String, ArrayList<NodoToken>> tablaSimbolos;
     private String currentHash;
     private String globalHash;
     private Stack<String> scopeStack;
 
+    /*
+     * Constructor
+     *
+     * Objetivo:
+     * Inicializar la tabla con el scope global.
+     */
     public TablaSimbolos() {
         tablaSimbolos = new HashMap<>();
         globalHash = "global";
@@ -132,6 +207,15 @@ public class TablaSimbolos {
         scopeStack.push(globalHash);
     }
 
+    /*
+     * Crea un nuevo scope
+     *
+     * Entrada:
+     * - nombre del scope
+     *
+     * Salida:
+     * - cambia el scope actual
+     */
     public void crearNuevoScope(String nombreScope) {
         if (!tablaSimbolos.containsKey(nombreScope)) {
             tablaSimbolos.put(nombreScope, new ArrayList<>());
@@ -140,6 +224,9 @@ public class TablaSimbolos {
         scopeStack.push(nombreScope);
     }
 
+    /*
+     * Sale del scope actual y regresa al anterior
+     */
     public void salirDelScope() {
         if (scopeStack.size() > 1) {
             scopeStack.pop();
@@ -147,6 +234,15 @@ public class TablaSimbolos {
         }
     }
 
+    /*
+     * Agrega un símbolo al scope actual
+     *
+     * Entrada:
+     * - NodoToken con la información del símbolo
+     *
+     * Salida:
+     * - símbolo agregado a la tabla
+     */
     public boolean agregarNodo(NodoToken nodo) {
         ArrayList<NodoToken> scope = tablaSimbolos.get(currentHash);
         if (scope == null) {
@@ -157,6 +253,9 @@ public class TablaSimbolos {
         return true;
     }
 
+    /*
+     * Busca un símbolo en el scope actual
+     */
     public NodoToken buscarSimbolo(String nombre) {
         ArrayList<NodoToken> scope = tablaSimbolos.get(currentHash);
         if (scope == null) {
@@ -171,6 +270,9 @@ public class TablaSimbolos {
         return null;
     }
 
+    /*
+     * Busca un símbolo en un scope específico
+     */
     public NodoToken buscarSimboloEnScope(String nombre, String scope) {
         ArrayList<NodoToken> scopeList = tablaSimbolos.get(scope);
         if (scopeList == null) {
@@ -185,6 +287,9 @@ public class TablaSimbolos {
         return null;
     }
 
+    /*
+     * Obtiene el scope padre
+     */
     public String getParentScope() {
         if (scopeStack.size() >= 2) {
             return scopeStack.get(scopeStack.size() - 2);
@@ -208,6 +313,12 @@ public class TablaSimbolos {
         return tablaSimbolos.getOrDefault(scope, new ArrayList<>());
     }
 
+    /*
+     * Escribe la tabla de símbolos en archivo
+     *
+     * Salida:
+     * - archivo tabla_simbolos.txt
+     */
     public void escribirArchivo() {
         escribirArchivo("tabla_simbolos.txt");
     }
@@ -271,6 +382,12 @@ public class TablaSimbolos {
         }
     }
 
+    /*
+     * Imprime la tabla en consola
+     *
+     * Objetivo:
+     * Facilitar la visualización durante pruebas
+     */
     public void imprimir() {
         List<String> scopes = new ArrayList<>(tablaSimbolos.keySet());
         scopes.sort(Comparator.naturalOrder());

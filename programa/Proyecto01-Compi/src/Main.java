@@ -2,6 +2,26 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Scanner;
 
+/*
+ * Clase principal del proyecto.
+ *
+ * Objetivo:
+ * Solicitar al usuario el archivo fuente que desea analizar y ejecutar
+ * el proceso completo de análisis léxico y sintáctico.
+ *
+ * Entradas:
+ * - Nombre o ruta del archivo fuente ingresado por consola.
+ *
+ * Salidas:
+ * - Mensaje en consola indicando si el análisis terminó correctamente
+ *   o si se encontraron errores.
+ * - Archivos generados por los componentes del sistema:
+ *   tokens.txt, errores.txt y tabla_simbolos.txt.
+ *
+ * Restricciones:
+ * - El archivo ingresado debe existir.
+ * - El lexer y el parser deben haberse generado previamente con JFlex y CUP.
+ */
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);

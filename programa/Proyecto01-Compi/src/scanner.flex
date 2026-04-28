@@ -3,6 +3,15 @@ import java.io.*;
 
 %%
 
+/*
+ * =========================================================
+ *  ANALIZADOR LÉXICO (JFlex)
+ * =========================================================
+ * Este archivo define el lexer del lenguaje.
+ * Su función es leer el código fuente y convertirlo en tokens
+ * que luego serán utilizados por el parser (CUP).
+ */
+
 %class Lexer
 %public
 %unicode
@@ -11,8 +20,17 @@ import java.io.*;
 %cup
 
 %{
+    // Manejador de errores léxicos
     ManejadorErrores manejadorErrores;
+
+    // Archivo donde se guardan los tokens generados
     PrintWriter tokenWriter;
+
+    /*
+     * Bloque de inicialización:
+     * Se ejecuta cuando se crea el lexer.
+     * Aquí se abren los archivos de salida.
+     */
 
     {
         try {
@@ -25,25 +43,38 @@ import java.io.*;
         }
     }
 
+    /*
+     * Se debe llamar al finalizar el análisis léxico para asegurar que los archivos se cierren correctamente.
+     */
     public void cerrar() {
         if (tokenWriter != null) tokenWriter.close();
         if (manejadorErrores != null) manejadorErrores.cerrar();
     }
 
+    // Buffer para construir cadenas de texto
     StringBuffer string = new StringBuffer();
 
+    // Crea un símbolo sin valor asociado
     private Symbol symbol(int type) {
         return new Symbol(type, yyline, yycolumn);
     }
 
+    // Crea un símbolo con valor asociado
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline, yycolumn, value);
     }
 
+    // Permite acceder al manejador de errores desde el parser
     public ManejadorErrores getManejadorErrores() {
         return manejadorErrores;
     }
 %}
+
+/*
+ * ==========================
+ *  EXPRESIONES REGULARES
+ * ==========================
+ */
 
 letra        = [a-zA-Z_]
 digito       = [0-9]
@@ -64,6 +95,12 @@ espacio          = {LineTerminator} | [ \t\f]
 %state COMENTARIO
 
 %%
+
+/*
+ * ================================
+ *  ESTADO INICIAL (YYINITIAL)
+ * ================================
+ */
 
 <YYINITIAL> {
 
@@ -353,6 +390,12 @@ espacio          = {LineTerminator} | [ \t\f]
 
     {espacio}  { /* ignorar */ }
 
+     /*
+     * ========================
+     * ERROR LÉXICO
+     * ========================
+     * Si no coincide con nada, se reporta error
+     */
     .  { 
         String errorMsg = "Carácter no válido: '" + yytext() + "'";
         if (manejadorErrores != null) {
@@ -363,6 +406,12 @@ espacio          = {LineTerminator} | [ \t\f]
     }
 }
 
+/*
+ * =========================================================
+ *  ESTADO COMENTARIO
+ * =========================================================
+ * Ignora todo hasta encontrar -}
+ */
 <COMENTARIO> {
     "-}"             { yybegin(YYINITIAL); }
     [^-\r\n]+        { }
@@ -370,6 +419,12 @@ espacio          = {LineTerminator} | [ \t\f]
     {LineTerminator} { }
 }
 
+/*
+ * =========================================================
+ *  ESTADO CADENA
+ * =========================================================
+ * Construye el contenido de una cadena
+ */
 <CADENA> {
     \"              { 
                         yybegin(YYINITIAL);
@@ -383,6 +438,8 @@ espacio          = {LineTerminator} | [ \t\f]
     \\r              { string.append('\r'); }
     \\\"             { string.append('\"'); }
     \\\\             { string.append('\\'); }
+
+    //Manejo de error para cadena no cerrada
     {LineTerminator} { 
         String errorMsg = "Cadena no cerrada";
         if (manejadorErrores != null) {
