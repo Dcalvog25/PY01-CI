@@ -419,15 +419,16 @@ bloque_casos ::= INICIO_BLOQUE lista_casos FINAL_BLOQUE
 lista_casos ::= caso lista_casos
               | caso;
 
-caso ::= CASE literal DOS_PUNTOS lista_sentencias
-       | CASE SEPARADOR literal DOS_PUNTOS lista_sentencias
-       | CASE error DOS_PUNTOS lista_sentencias
-       ;
+caso ::= CASE SEPARADOR literal DOS_PUNTOS lista_sentencias
+        | CASE SEPARADOR literal DOS_PUNTOS
+        | CASE error DOS_PUNTOS lista_sentencias
+        ;
 
 default_case ::= DEFAULT SEPARADOR DOS_PUNTOS lista_sentencias
-               | DEFAULT DOS_PUNTOS lista_sentencias
-               | DEFAULT error lista_sentencias
-               ;
+                | DEFAULT SEPARADOR DOS_PUNTOS
+                | DEFAULT DOS_PUNTOS lista_sentencias
+                | DEFAULT error lista_sentencias
+                ;
 
 break_nt ::= BREAK;
 

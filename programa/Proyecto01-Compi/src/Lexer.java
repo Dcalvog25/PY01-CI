@@ -891,7 +891,7 @@ public class Lexer implements java_cup.runtime.Scanner {
         if (manejadorErrores != null) {
             manejadorErrores.agregarErrorLexico(errorMsg, yyline, yycolumn);
         } else {
-            System.err.println("ERROR LÉXICO [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
+            System.err.println("Error Léxico [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
         }
             }
           // fall through
@@ -1006,7 +1006,7 @@ public class Lexer implements java_cup.runtime.Scanner {
         if (manejadorErrores != null) {
             manejadorErrores.agregarErrorLexico(errorMsg, yyline, yycolumn);
         } else {
-            System.err.println("ERROR LÉXICO [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
+            System.err.println("Error Léxico [Línea " + (yyline + 1) + ", Columna " + (yycolumn + 1) + "]: " + errorMsg);
         }
         yybegin(YYINITIAL);
             }
