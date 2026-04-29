@@ -191,6 +191,7 @@ public class TablaSimbolos {
     private String currentHash;
     private String globalHash;
     private Stack<String> scopeStack;
+    private HashMap<String, String> scopePadres = new HashMap<>();
 
     /*
      * Constructor
@@ -220,6 +221,7 @@ public class TablaSimbolos {
         if (!tablaSimbolos.containsKey(nombreScope)) {
             tablaSimbolos.put(nombreScope, new ArrayList<>());
         }
+        scopePadres.put(nombreScope, currentHash);
         currentHash = nombreScope;
         scopeStack.push(nombreScope);
     }
@@ -279,12 +281,13 @@ public class TablaSimbolos {
             return null;
         }
 
-        for (NodoToken nodo : scopeList) {
+        NodoToken result = null;
+        for(NodoToken nodo : scopeList) {
             if (nodo.getId().equals(nombre)) {
-                return nodo;
+                result = nodo; 
             }
         }
-        return null;
+        return result;
     }
 
     /*
@@ -295,6 +298,13 @@ public class TablaSimbolos {
             return scopeStack.get(scopeStack.size() - 2);
         }
         return globalHash;
+    }
+    /*
+     * Obtiene el scope padre
+     */
+    public String getPadreScope(String scope) {
+        
+        return scopePadres.getOrDefault(scope, globalHash);
     }
 
     public String getCurrentScope() {
@@ -339,7 +349,7 @@ public class TablaSimbolos {
                 ArrayList<NodoToken> nodos = tablaSimbolos.getOrDefault(scope, new ArrayList<>());
 
                 writer.println("----------------------------------------------------------------------------------------------------------------");
-                writer.println("SCOPE: " + scope);
+                writer.println("SCOPE: " + scope + "  (padre: " + scopePadres.getOrDefault(scope, "-") + ")");
                 writer.println("Total de símbolos: " + nodos.size());
                 writer.println("----------------------------------------------------------------------------------------------------------------");
 
